@@ -5,20 +5,29 @@
 
 AAuraCharacterBase::AAuraCharacterBase()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
+
+	Weapon = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Weapon"));
+	Weapon->SetupAttachment(GetMesh(), WeaponSocket);
+	Weapon->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
+}
+
+void AAuraCharacterBase::OnConstruction(const FTransform& Transform)
+{
+	Super::OnConstruction(Transform);
+
+	USkeletalMeshComponent* const CharacterMesh = GetMesh();
+	if (Weapon && CharacterMesh)
+	{
+		Weapon->AttachToComponent(
+			CharacterMesh,
+			FAttachmentTransformRules::SnapToTargetNotIncludingScale,
+			WeaponSocket
+		);
+	}
 }
 
 void AAuraCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
-}
-
-void AAuraCharacterBase::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
-
-void AAuraCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
