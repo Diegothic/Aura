@@ -3,6 +3,8 @@
 .vs/
 .vscode/
 .vsconfig
+*.DotSettings
+*.DotSettings.user
 
 # Compiled Object files
 *.slo
