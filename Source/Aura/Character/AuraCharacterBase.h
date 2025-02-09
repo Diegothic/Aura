@@ -13,11 +13,14 @@ class AURA_API AAuraCharacterBase : public ACharacter
 
 public:
 	AAuraCharacterBase();
-	
+
 	virtual void OnConstruction(const FTransform& Transform) override;
 
 protected:
 	virtual void BeginPlay() override;
+
+public:
+	FORCEINLINE USkeletalMeshComponent* GetWeapon() const { return Weapon; }
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Aura|Combat", Meta = (AllowPrivateAccess = "true"))

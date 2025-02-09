@@ -5,11 +5,18 @@
 
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
-#include "GameFramework/Character.h"
+#include "Interaction/TargetInterface.h"
 
 AAuraPlayerController::AAuraPlayerController()
 {
 	bReplicates = true;
+}
+
+void AAuraPlayerController::PlayerTick(float DeltaTime)
+{
+	Super::PlayerTick(DeltaTime);
+
+	CursorTrace();
 }
 
 void AAuraPlayerController::BeginPlay()
@@ -65,5 +72,32 @@ void AAuraPlayerController::OnMoveTriggered(const FInputActionValue& Value)
 	{
 		ControlledPawn->AddMovementInput(ForwardVector, InputAxisVector.Y);
 		ControlledPawn->AddMovementInput(RightVector, InputAxisVector.X);
+	}
+}
+
+void AAuraPlayerController::CursorTrace()
+{
+	LastTarget = CurrentTarget;
+
+	// Update current target
+	FHitResult CursorHit;
+	const bool bHit = GetHitResultUnderCursor(ECC_Camera, false, CursorHit)
+		&& CursorHit.bBlockingHit;
+	AActor* const HitActor = bHit ? CursorHit.GetActor() : nullptr;
+	CurrentTarget = HitActor && HitActor->Implements<UTargetInterface>()
+		                ? TScriptInterface<ITargetInterface>(HitActor)
+		                : nullptr;
+
+	// Update highlight
+	if (CurrentTarget != LastTarget)
+	{
+		if (LastTarget)
+		{
+			LastTarget->UnHighlightActor();
+		}
+		if (CurrentTarget)
+		{
+			CurrentTarget->HighlightActor();
+		}
 	}
 }
