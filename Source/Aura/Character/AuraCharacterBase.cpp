@@ -3,6 +3,7 @@
 
 #include "AuraCharacterBase.h"
 
+
 AAuraCharacterBase::AAuraCharacterBase()
 {
 	PrimaryActorTick.bCanEverTick = false;
@@ -27,7 +28,7 @@ void AAuraCharacterBase::OnConstruction(const FTransform& Transform)
 	}
 }
 
-void AAuraCharacterBase::BeginPlay()
+UAbilitySystemComponent* AAuraCharacterBase::GetAbilitySystemComponent() const
 {
-	Super::BeginPlay();
+	return AbilitySystemComponent;
 }

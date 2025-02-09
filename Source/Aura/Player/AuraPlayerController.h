@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+
 #include "AuraPlayerController.generated.h"
 
 class ITargetInterface;
@@ -16,11 +17,18 @@ class AURA_API AAuraPlayerController : public APlayerController
 public:
 	AAuraPlayerController();
 
+	//~ Begin APlayerController Interface
+public:
 	virtual void PlayerTick(float DeltaTime) override;
 
 protected:
-	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
+	//~ End APlayerController Interface
+
+protected:
+	//~ Begin AActor Interface
+	virtual void BeginPlay() override;
+	//~ End AActor Interface
 
 private:
 	void OnMoveTriggered(const struct FInputActionValue& Value);

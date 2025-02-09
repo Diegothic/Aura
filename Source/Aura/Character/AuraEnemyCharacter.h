@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "AuraCharacterBase.h"
 #include "Aura/Interaction/TargetInterface.h"
+
 #include "AuraEnemyCharacter.generated.h"
 
 UCLASS()
@@ -14,6 +15,10 @@ class AURA_API AAuraEnemyCharacter : public AAuraCharacterBase, public ITargetIn
 
 public:
 	AAuraEnemyCharacter();
+
+	//~ Begin AActor Interface
+	virtual void PostInitializeComponents() override;
+	//~ End AActor Interface
 
 public:
 	//~ Begin ITargetInterface Interface
