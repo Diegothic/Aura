@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+
 #include "AuraEffectActor.generated.h"
 
 UCLASS()
@@ -16,7 +17,7 @@ public:
 
 	virtual void BeginPlay() override;
 
-public:
+protected:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Aura|Effect")
 	void OnTriggerBeginOverlap(
 		UPrimitiveComponent* OverlappedComponent,
