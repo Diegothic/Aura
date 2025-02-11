@@ -50,7 +50,8 @@ void AAuraEffectActor::OnTriggerBeginOverlap_Implementation(
 				))
 			)
 			{
-				AttributeSet->SetHealth(AttributeSet->GetHealth() + 25.0f);
+				AttributeSet->SetHealth(AttributeSet->GetHealth() - 25.0f);
+				AttributeSet->SetMana(AttributeSet->GetMana() - 25.0f);
 
 				Destroy();
 			}
