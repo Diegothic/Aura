@@ -7,7 +7,9 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "AbilitySystemComponent.h"
+#include "Player/AuraPlayerController.h"
 #include "Player/AuraPlayerState.h"
+#include "UI/HUD/AuraHUD.h"
 
 
 AAuraPlayerCharacter::AAuraPlayerCharacter()
@@ -41,6 +43,9 @@ void AAuraPlayerCharacter::PossessedBy(AController* NewController)
 
 	// Init Ability Actor Info for the Server
 	InitAbilityActorInfo();
+
+	// Init HUD for the Server
+	InitHUD();
 }
 
 void AAuraPlayerCharacter::OnRep_PlayerState()
@@ -49,14 +54,35 @@ void AAuraPlayerCharacter::OnRep_PlayerState()
 
 	// Init Ability Actor Info for the Client
 	InitAbilityActorInfo();
+
+	// Init HUD for the Client
+	InitHUD();
 }
 
 void AAuraPlayerCharacter::InitAbilityActorInfo()
 {
-	AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>();
-	check(AuraPlayerState);
-	AbilitySystemComponent = AuraPlayerState->GetAbilitySystemComponent();
-	AttributeSet = AuraPlayerState->GetAttributeSet();
+	AAuraPlayerState* CurrentPlayerState = GetPlayerState<AAuraPlayerState>();
+	check(CurrentPlayerState);
+	AbilitySystemComponent = CurrentPlayerState->GetAbilitySystemComponent();
+	AttributeSet = CurrentPlayerState->GetAttributeSet();
 	check(AbilitySystemComponent);
-	AbilitySystemComponent->InitAbilityActorInfo(AuraPlayerState, this);
+	AbilitySystemComponent->InitAbilityActorInfo(CurrentPlayerState, this);
+}
+
+void AAuraPlayerCharacter::InitHUD() const
+{
+	AAuraPlayerState* const CurrentPlayerState = GetPlayerState<AAuraPlayerState>();
+	check(CurrentPlayerState);
+	if (AAuraPlayerController* const CurrentPlayerController = GetController<AAuraPlayerController>())
+	{
+		if (AAuraHUD* const CurrentHUD = Cast<AAuraHUD>(CurrentPlayerController->GetHUD()))
+		{
+			CurrentHUD->Initialize(
+				CurrentPlayerController,
+				CurrentPlayerState,
+				AbilitySystemComponent,
+				AttributeSet
+			);
+		}
+	}
 }

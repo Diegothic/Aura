@@ -15,7 +15,10 @@ class AURA_API AAuraEffectActor : public AActor
 public:
 	AAuraEffectActor();
 
+protected:
+	//~ Begin AActor Interface
 	virtual void BeginPlay() override;
+	//~ End AActor Interface
 
 protected:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Aura|Effect")
@@ -37,9 +40,9 @@ protected:
 	);
 
 private:
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class USphereComponent> TriggerSphere;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UStaticMeshComponent> Mesh;
 };

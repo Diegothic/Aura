@@ -22,6 +22,7 @@ public:
 
 private:
 	void InitAbilityActorInfo();
+	void InitHUD() const;
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Aura|Camera", Meta = (AllowPrivateAccess = "true"))
