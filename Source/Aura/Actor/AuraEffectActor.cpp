@@ -20,9 +20,14 @@ void AAuraEffectActor::BeginPlay()
 	Super::BeginPlay();
 }
 
-void AAuraEffectActor::ApplyEffectToTarget(AActor* const InTargetActor, const TSubclassOf<UGameplayEffect>& InEffectClass)
+bool AAuraEffectActor::ApplyEffectToTarget(
+	AActor* const InTargetActor,
+	const TSubclassOf<UGameplayEffect>& InEffectClass,
+	FActiveGameplayEffectHandle& OutEffectHandle
+) const
 {
-	if (UAbilitySystemComponent* const TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(InTargetActor))
+	if (UAbilitySystemComponent* const TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(
+		InTargetActor))
 	{
 		check(InEffectClass);
 
@@ -32,6 +37,116 @@ void AAuraEffectActor::ApplyEffectToTarget(AActor* const InTargetActor, const TS
 		const FGameplayEffectSpecHandle EffectSpecHandle
 			= TargetASC->MakeOutgoingSpec(InEffectClass, 1.0f, EffectContextHandle);
 
-		TargetASC->ApplyGameplayEffectSpecToSelf(*EffectSpecHandle.Data);
+		OutEffectHandle = TargetASC->ApplyGameplayEffectSpecToSelf(*EffectSpecHandle.Data);
+		return true;
 	}
+
+	return false;
+}
+
+bool AAuraEffectActor::OnOverlap(AActor* const TargetActor)
+{
+	bool bAnyEffectApplied = false;
+
+	for (auto& Effect : InstantEffects)
+	{
+		if (Effect.ApplicationPolicy == EEffectApplicationPolicy::ApplyOnOverlap)
+		{
+			FActiveGameplayEffectHandle EffectHandle;
+			bAnyEffectApplied |= ApplyEffectToTarget(TargetActor, Effect.GameplayEffectClass, EffectHandle);
+		}
+	}
+
+	for (auto& Effect : DurationEffects)
+	{
+		if (Effect.ApplicationPolicy == EEffectApplicationPolicy::ApplyOnOverlap)
+		{
+			FActiveGameplayEffectHandle EffectHandle;
+			bAnyEffectApplied |= ApplyEffectToTarget(TargetActor, Effect.GameplayEffectClass, EffectHandle);
+		}
+	}
+
+	for (auto& Effect : InfiniteEffects)
+	{
+		if (Effect.ApplicationPolicy == EEffectApplicationPolicy::ApplyOnOverlap)
+		{
+			FActiveGameplayEffectHandle EffectHandle;
+			if (bool bEffectApplied = ApplyEffectToTarget(TargetActor, Effect.GameplayEffectClass, EffectHandle))
+			{
+				bAnyEffectApplied |= bEffectApplied;
+				if (Effect.RemovalPolicy == EEffectRemovalPolicy::RemoveOnEndOverlap)
+				{
+					Effect.ActiveOverlapGameplayEffects.Add(TargetActor, EffectHandle);
+				}
+			}
+		}
+	}
+
+	if (bDestroyActorOnEffectApplication && bAnyEffectApplied)
+	{
+		Destroy();
+	}
+
+	return bAnyEffectApplied;
+}
+
+bool AAuraEffectActor::OnEndOverlap(AActor* const TargetActor)
+{
+	bool bAnyEffectApplied = false;
+	bool bAnyEffectRemoved = false;
+
+	for (auto& Effect : InstantEffects)
+	{
+		if (Effect.ApplicationPolicy == EEffectApplicationPolicy::ApplyOnEndOverlap)
+		{
+			FActiveGameplayEffectHandle EffectHandle;
+			bAnyEffectApplied |= ApplyEffectToTarget(TargetActor, Effect.GameplayEffectClass, EffectHandle);
+		}
+	}
+
+	for (auto& Effect : DurationEffects)
+	{
+		if (Effect.ApplicationPolicy == EEffectApplicationPolicy::ApplyOnEndOverlap)
+		{
+			FActiveGameplayEffectHandle EffectHandle;
+			bAnyEffectApplied |= ApplyEffectToTarget(TargetActor, Effect.GameplayEffectClass, EffectHandle);
+		}
+	}
+
+	for (auto& Effect : InfiniteEffects)
+	{
+		if (Effect.ApplicationPolicy == EEffectApplicationPolicy::ApplyOnEndOverlap)
+		{
+			FActiveGameplayEffectHandle EffectHandle;
+			bAnyEffectApplied |= ApplyEffectToTarget(TargetActor, Effect.GameplayEffectClass, EffectHandle);
+		}
+
+		if (Effect.RemovalPolicy == EEffectRemovalPolicy::RemoveOnEndOverlap)
+		{
+			if (Effect.ActiveOverlapGameplayEffects.Contains(TargetActor))
+			{
+				FActiveGameplayEffectHandle EffectHandle;
+				Effect.ActiveOverlapGameplayEffects.RemoveAndCopyValue(TargetActor, EffectHandle);
+
+				UAbilitySystemComponent* const TargetASC
+					= UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor);
+				if (IsValid(TargetASC))
+				{
+					bAnyEffectRemoved |= TargetASC->RemoveActiveGameplayEffect(EffectHandle, 1);
+				}
+			}
+		}
+	}
+
+	if (bDestroyActorOnEffectApplication && bAnyEffectApplied)
+	{
+		Destroy();
+	}
+
+	if (bDestroyActorOnEffectRemoval && bAnyEffectRemoved)
+	{
+		Destroy();
+	}
+
+	return bAnyEffectApplied || bAnyEffectRemoved;
 }
