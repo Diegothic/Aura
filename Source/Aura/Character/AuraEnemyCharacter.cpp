@@ -24,8 +24,7 @@ void AAuraEnemyCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	check(AbilitySystemComponent);
-	AbilitySystemComponent->InitAbilityActorInfo(this, this);
+	InitAbilityActorInfo();
 }
 
 void AAuraEnemyCharacter::HighlightActor()
@@ -52,4 +51,15 @@ void AAuraEnemyCharacter::UnHighlightActor()
 	USkeletalMeshComponent* const WeaponMesh = GetWeapon();
 	WeaponMesh->SetRenderCustomDepth(false);
 	WeaponMesh->SetCustomDepthStencilValue(0);
+}
+
+void AAuraEnemyCharacter::InitAbilityActorInfo()
+{
+	Super::InitAbilityActorInfo();
+
+	check(AbilitySystemComponent);
+	AbilitySystemComponent->InitAbilityActorInfo(this, this);
+
+	UAuraAbilitySystemComponent* const AuraASC = Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent);
+	AuraASC->AbilityActorInfoSet();
 }

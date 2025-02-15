@@ -32,6 +32,9 @@ public:
 	FORCEINLINE USkeletalMeshComponent* GetWeapon() const { return Weapon; }
 
 protected:
+	virtual void InitAbilityActorInfo();
+
+protected:
 	UPROPERTY(VisibleAnywhere, Category = "Aura|AbilitySystem")
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
 

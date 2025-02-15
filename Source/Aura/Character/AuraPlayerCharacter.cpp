@@ -7,6 +7,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "AbilitySystemComponent.h"
+#include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "Player/AuraPlayerController.h"
 #include "Player/AuraPlayerState.h"
 #include "UI/HUD/AuraHUD.h"
@@ -61,12 +62,17 @@ void AAuraPlayerCharacter::OnRep_PlayerState()
 
 void AAuraPlayerCharacter::InitAbilityActorInfo()
 {
+	Super::InitAbilityActorInfo();
+
 	AAuraPlayerState* CurrentPlayerState = GetPlayerState<AAuraPlayerState>();
 	check(CurrentPlayerState);
 	AbilitySystemComponent = CurrentPlayerState->GetAbilitySystemComponent();
 	AttributeSet = CurrentPlayerState->GetAttributeSet();
 	check(AbilitySystemComponent);
 	AbilitySystemComponent->InitAbilityActorInfo(CurrentPlayerState, this);
+
+	UAuraAbilitySystemComponent* const AuraASC = Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent);
+	AuraASC->AbilityActorInfoSet();
 }
 
 void AAuraPlayerCharacter::InitHUD() const

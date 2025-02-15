@@ -26,6 +26,9 @@ public:
 	virtual void UnHighlightActor() override;
 	//~ End ITargetInterface Interface
 
+protected:
+	virtual void InitAbilityActorInfo() override;
+
 private:
 	UPROPERTY(BlueprintReadOnly, Transient, Category = "Aura|Target", Meta = (AllowPrivateAccess = "true"))
 	bool bHighlighted;
