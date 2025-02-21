@@ -59,13 +59,20 @@ class AURA_API UAuraAttributeSet : public UAttributeSet
 public:
 	UAuraAttributeSet();
 
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Health);
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, MaxHealth);
 
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Mana);
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, MaxMana);
+
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Strength);
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Intelligence);
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Resilience);
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Vigor);
+
+	//~ Begin UObject Interface
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	//~ End UObject Interface
 
 	//~ Begin UAttributeSet Interface
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
@@ -82,6 +89,15 @@ protected:
 	void OnRep_Mana(const FGameplayAttributeData& OldValue) const;
 	UFUNCTION()
 	void OnRep_MaxMana(const FGameplayAttributeData& OldValue) const;
+
+	UFUNCTION()
+	void OnRep_Strength(const FGameplayAttributeData& OldValue) const;
+	UFUNCTION()
+	void OnRep_Intelligence(const FGameplayAttributeData& OldValue) const;
+	UFUNCTION()
+	void OnRep_Resilience(const FGameplayAttributeData& OldValue) const;
+	UFUNCTION()
+	void OnRep_Vigor(const FGameplayAttributeData& OldValue) const;
 
 private:
 	static void FillEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& OutProps);
@@ -102,4 +118,20 @@ private:
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxMana, Category = "Aura|Attributes|Mana",
 		Meta = (AllowPrivateAccess = "true"))
 	FGameplayAttributeData MaxMana;
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Strength, Category = "Aura|Attributes|Primary",
+		Meta = (AllowPrivateAccess = "true"))
+	FGameplayAttributeData Strength;
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Intelligence, Category = "Aura|Attributes|Primary",
+		Meta = (AllowPrivateAccess = "true"))
+	FGameplayAttributeData Intelligence;
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Resilience, Category = "Aura|Attributes|Primary",
+		Meta = (AllowPrivateAccess = "true"))
+	FGameplayAttributeData Resilience;
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Vigor, Category = "Aura|Attributes|Primary",
+		Meta = (AllowPrivateAccess = "true"))
+	FGameplayAttributeData Vigor;
 };
