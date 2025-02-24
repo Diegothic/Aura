@@ -45,8 +45,8 @@ void AAuraPlayerCharacter::PossessedBy(AController* NewController)
 	// Init Ability Actor Info for the Server
 	InitAbilityActorInfo();
 
-	// Init primary attribute values - only for the Server since it's replicated
-	InitPrimaryAttributes();
+	// Init default attribute values - only for the Server since it's replicated
+	InitDefaultAttributes();
 
 	// Init HUD for the Server
 	InitHUD();

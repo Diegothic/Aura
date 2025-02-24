@@ -35,7 +35,9 @@ public:
 protected:
 	virtual void InitAbilityActorInfo();
 
-	void InitPrimaryAttributes() const;
+	void ApplyEffectToSelf(const TSubclassOf<UGameplayEffect>& EffectClass, float Level) const;
+
+	void InitDefaultAttributes() const;
 
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "Aura|AbilitySystem")
@@ -44,10 +46,13 @@ protected:
 	UPROPERTY()
 	TObjectPtr<UAttributeSet> AttributeSet;
 
+private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Aura|Attributes", Meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<UGameplayEffect> DefaultPrimaryAttributes;
 
-private:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Aura|Attributes", Meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<UGameplayEffect> DefaultSecondaryAttributes;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Aura|Combat", Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USkeletalMeshComponent> Weapon;
 
