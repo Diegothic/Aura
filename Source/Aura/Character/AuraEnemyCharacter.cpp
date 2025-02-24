@@ -53,6 +53,11 @@ void AAuraEnemyCharacter::UnHighlightActor()
 	WeaponMesh->SetCustomDepthStencilValue(0);
 }
 
+int32 AAuraEnemyCharacter::GetCharacterLevel() const
+{
+	return Level;
+}
+
 void AAuraEnemyCharacter::InitAbilityActorInfo()
 {
 	Super::InitAbilityActorInfo();

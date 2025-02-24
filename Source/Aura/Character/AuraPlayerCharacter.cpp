@@ -63,6 +63,19 @@ void AAuraPlayerCharacter::OnRep_PlayerState()
 	InitHUD();
 }
 
+int32 AAuraPlayerCharacter::GetCharacterLevel() const
+{
+	const AAuraPlayerState* const CurrentPlayerState = GetPlayerState<AAuraPlayerState>();
+	check(CurrentPlayerState);
+	if (CurrentPlayerState->Implements<UCombatInterface>())
+	{
+		const ICombatInterface* const CombatInterface = Cast<ICombatInterface>(CurrentPlayerState);
+		return CombatInterface->GetCharacterLevel();
+	}
+
+	return Super::GetCharacterLevel();
+}
+
 void AAuraPlayerCharacter::InitAbilityActorInfo()
 {
 	Super::InitAbilityActorInfo();

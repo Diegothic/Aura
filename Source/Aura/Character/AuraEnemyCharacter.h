@@ -26,10 +26,17 @@ public:
 	virtual void UnHighlightActor() override;
 	//~ End ITargetInterface Interface
 
+	//~ Begin ICombatInterface Interface
+	virtual int32 GetCharacterLevel() const override;
+	//~ End ICombatInterface Interface
+
 protected:
 	virtual void InitAbilityActorInfo() override;
 
 private:
 	UPROPERTY(BlueprintReadOnly, Transient, Category = "Aura|Target", Meta = (AllowPrivateAccess = "true"))
 	bool bHighlighted;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Aura|Combat", Meta = (AllowPrivateAccess = "true"))
+	int32 Level = 1;
 };
