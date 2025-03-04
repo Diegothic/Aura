@@ -8,7 +8,9 @@
 #include "AuraHUD.generated.h"
 
 class UOverlayWidgetController;
+class UAttributeMenuWidgetController;
 class UAuraUserWidget;
+struct FWidgetControllerParams;
 
 UCLASS()
 class AURA_API AAuraHUD : public AHUD
@@ -23,8 +25,8 @@ public:
 		class UAttributeSet* InAttributeSet
 	);
 
-private:
-	UOverlayWidgetController* GetOverlayWidgetController(const struct FWidgetControllerParams& Params);
+	UOverlayWidgetController* GetOverlayWidgetController(const FWidgetControllerParams& Params);
+	UAttributeMenuWidgetController* GetAttributeMenuWidgetController(const FWidgetControllerParams& Params);
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Aura|HUD")
@@ -38,4 +40,10 @@ private:
 
 	UPROPERTY(BlueprintReadOnly, Category = "Aura|HUD", Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UAuraUserWidget> OverlayWidget;
+
+	UPROPERTY(EditAnywhere, Category = "Aura|HUD")
+	TSubclassOf<UAttributeMenuWidgetController> AttributeMenuWidgetControllerClass;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Aura|HUD", Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UAttributeMenuWidgetController> AttributeMenuWidgetController;
 };

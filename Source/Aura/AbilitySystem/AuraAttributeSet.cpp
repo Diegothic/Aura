@@ -7,6 +7,7 @@
 #include "Net/UnrealNetwork.h"
 #include "GameplayEffectExtension.h"
 #include "GameFramework/Character.h"
+#include "GameplayTags/AuraGameplayTags.h"
 
 
 UAuraAttributeSet::UAuraAttributeSet()
@@ -19,6 +20,67 @@ UAuraAttributeSet::UAuraAttributeSet()
 	  MaxHealth(100.0f),
 	  MaxMana(50.0f)
 {
+	const FAuraGameplayTags& GameplayTags = FAuraGameplayTags::Get();
+
+	// Primary Attributes
+	GameplayTagToAttributeGetterMap.Add(
+		GameplayTags.Attribute_Primary_Strength,
+		GetStrengthAttribute
+	);
+	GameplayTagToAttributeGetterMap.Add(
+		GameplayTags.Attribute_Primary_Intelligence,
+		GetIntelligenceAttribute
+	);
+	GameplayTagToAttributeGetterMap.Add(
+		GameplayTags.Attribute_Primary_Resilience,
+		GetResilienceAttribute
+	);
+	GameplayTagToAttributeGetterMap.Add(
+		GameplayTags.Attribute_Primary_Vigor,
+		GetVigorAttribute
+	);
+
+	// Secondary Attributes
+	GameplayTagToAttributeGetterMap.Add(
+		GameplayTags.Attribute_Secondary_MaxHealth,
+		GetMaxHealthAttribute
+	);
+	GameplayTagToAttributeGetterMap.Add(
+		GameplayTags.Attribute_Secondary_MaxMana,
+		GetMaxManaAttribute
+	);
+	GameplayTagToAttributeGetterMap.Add(
+		GameplayTags.Attribute_Secondary_Armor,
+		GetArmorAttribute
+	);
+	GameplayTagToAttributeGetterMap.Add(
+		GameplayTags.Attribute_Secondary_ArmorPenetration,
+		GetArmorPenetrationAttribute
+	);
+	GameplayTagToAttributeGetterMap.Add(
+		GameplayTags.Attribute_Secondary_BlockChance,
+		GetBlockChanceAttribute
+	);
+	GameplayTagToAttributeGetterMap.Add(
+		GameplayTags.Attribute_Secondary_CriticalHitChance,
+		GetCriticalHitChanceAttribute
+	);
+	GameplayTagToAttributeGetterMap.Add(
+		GameplayTags.Attribute_Secondary_CriticalHitDamage,
+		GetCriticalHitDamageAttribute
+	);
+	GameplayTagToAttributeGetterMap.Add(
+		GameplayTags.Attribute_Secondary_CriticalHitResistance,
+		GetCriticalHitResistanceAttribute
+	);
+	GameplayTagToAttributeGetterMap.Add(
+		GameplayTags.Attribute_Secondary_HealthRegeneration,
+		GetHealthRegenerationAttribute
+	);
+	GameplayTagToAttributeGetterMap.Add(
+		GameplayTags.Attribute_Secondary_ManaRegeneration,
+		GetManaRegenerationAttribute
+	);
 }
 
 void UAuraAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -101,6 +163,18 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 	{
 		SetMaxMana(FMath::Max(GetMaxMana(), 0.0f));
 	}
+}
+
+TOptional<TStaticFuncPtr<FGameplayAttribute()>> UAuraAttributeSet::FindGameplayAttributeGetter(
+	const FGameplayTag& GameplayTag
+) const
+{
+	if (!GameplayTagToAttributeGetterMap.Contains(GameplayTag))
+	{
+		return TOptional<TStaticFuncPtr<FGameplayAttribute()>>();
+	}
+
+	return GameplayTagToAttributeGetterMap[GameplayTag];
 }
 
 void UAuraAttributeSet::FillEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& OutProps)
