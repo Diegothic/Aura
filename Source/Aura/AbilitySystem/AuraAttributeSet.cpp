@@ -22,6 +22,7 @@ UAuraAttributeSet::UAuraAttributeSet()
 {
 	const FAuraGameplayTags& GameplayTags = FAuraGameplayTags::Get();
 
+	// Primary Attributes
 	GameplayTagToAttributeGetterMap.Add(
 		GameplayTags.Attribute_Primary_Strength,
 		GetStrengthAttribute
@@ -39,6 +40,7 @@ UAuraAttributeSet::UAuraAttributeSet()
 		GetVigorAttribute
 	);
 
+	// Secondary Attributes
 	GameplayTagToAttributeGetterMap.Add(
 		GameplayTags.Attribute_Secondary_MaxHealth,
 		GetMaxHealthAttribute
