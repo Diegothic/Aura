@@ -5,7 +5,6 @@
 
 #include "AbilitySystem/AuraAttributeSet.h"
 #include "AbilitySystem/Data/AttributeInfo.h"
-#include "GameplayTags/AuraGameplayTags.h"
 
 
 void UAttributeMenuWidgetController::BroadcastInitialValues()
@@ -14,14 +13,27 @@ void UAttributeMenuWidgetController::BroadcastInitialValues()
 
 	const UAuraAttributeSet* const AuraAttributeSet = CastChecked<UAuraAttributeSet>(AttributeSet);
 
+	TSet<FGameplayTag> AttributeTags;
+	AttributeTags.Reserve(16);
+	AuraAttributeSet->GetAttributeTags(AttributeTags);
+
 	check(AttributeInfo);
-	if (
-		TOptional<const FAuraAttributeInfo*> Info
-			= AttributeInfo->FindAttributeInfo(UAuraGameplayTags::Get().Attribute_Primary_Strength)
-	)
+	for (const FGameplayTag& AttributeTag : AttributeTags)
 	{
-		float StrengthValue = AuraAttributeSet->GetStrength();
-		AttributeInfoDelegate.Broadcast(*Info.GetValue(), StrengthValue);
+		if (const TOptional<const FAuraAttributeInfo*> Info = AttributeInfo->FindAttributeInfo(AttributeTag))
+		{
+			float Value = 0.0f;
+			if (
+				const TOptional<TStaticFuncPtr<FGameplayAttribute()>> Attribute
+					= AuraAttributeSet->FindGameplayAttributeGetter(AttributeTag)
+			)
+			{
+				const TStaticFuncPtr<FGameplayAttribute()> AttributeGetter = Attribute.GetValue();
+				Value = AttributeGetter().GetNumericValue(AuraAttributeSet);
+			}
+
+			AttributeInfoDelegate.Broadcast(*Info.GetValue(), Value);
+		}
 	}
 }
 

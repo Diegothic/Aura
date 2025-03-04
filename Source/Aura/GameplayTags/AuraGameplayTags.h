@@ -2,19 +2,14 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
-#include "AuraGameplayTags.generated.h"
 
-UCLASS(MinimalAPI)
-class UAuraGameplayTags : public UObject
+class FAuraGameplayTags
 {
-	GENERATED_UCLASS_BODY()
-
 public:
 	static AURA_API void Init();
 
-	FORCEINLINE static const UAuraGameplayTags& Get() { return *Instance; }
+	FORCEINLINE static const FAuraGameplayTags& Get() { return Instance; }
 
 public:
 	FGameplayTag Attribute_Primary_Strength;
@@ -34,5 +29,5 @@ public:
 	FGameplayTag Attribute_Secondary_ManaRegeneration;
 
 private:
-	static AURA_API UAuraGameplayTags* Instance;
+	static AURA_API FAuraGameplayTags Instance;
 };

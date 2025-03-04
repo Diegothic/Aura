@@ -17,5 +17,5 @@ void UAuraAssetManager::StartInitialLoading()
 {
 	Super::StartInitialLoading();
 
-	UAuraGameplayTags::Init();
+	FAuraGameplayTags::Init();
 }

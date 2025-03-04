@@ -51,6 +51,9 @@ struct FEffectProperties
 	TObjectPtr<ACharacter> TargetCharacter = nullptr;
 };
 
+template <class T>
+using TStaticFuncPtr = typename TBaseStaticDelegateInstance<T, FDefaultDelegateUserPolicy>::FFuncPtr;
+
 UCLASS()
 class AURA_API UAuraAttributeSet : public UAttributeSet
 {
@@ -92,6 +95,14 @@ public:
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
 	virtual void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data) override;
 	//~ End UAttributeSet Interface
+
+public:
+	FORCEINLINE void GetAttributeTags(TSet<FGameplayTag>& OutTags) const
+	{
+		GameplayTagToAttributeGetterMap.GetKeys(OutTags);
+	}
+
+	TOptional<TStaticFuncPtr<FGameplayAttribute()>> FindGameplayAttributeGetter(const FGameplayTag& GameplayTag) const;
 
 protected:
 	//~ OnRep Vital Attributes
@@ -208,4 +219,7 @@ private:
 		Meta = (AllowPrivateAccess = "true"))
 	FGameplayAttributeData ManaRegeneration;
 	//~ End Secondary Attributes
+
+private:
+	TMap<FGameplayTag, TStaticFuncPtr<FGameplayAttribute()>> GameplayTagToAttributeGetterMap;
 };
