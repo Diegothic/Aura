@@ -50,6 +50,9 @@ void AAuraPlayerCharacter::PossessedBy(AController* NewController)
 
 	// Init HUD for the Server
 	InitHUD();
+
+	// Give startup abilities - only for the Server since it's replicated
+	GiveStartupAbilities();
 }
 
 void AAuraPlayerCharacter::OnRep_PlayerState()

@@ -19,6 +19,9 @@ public:
 
 	FEffectAssetTags EffectAssetTagsDelegate;
 
+public:
+	void GiveAbilities(const TArray<TSubclassOf<UGameplayAbility>>& InAbilities);
+
 protected:
 	void OnGameplayEffectApplied(
 		UAbilitySystemComponent* InAbilitySystemComponent,

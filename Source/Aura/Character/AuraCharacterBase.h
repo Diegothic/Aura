@@ -12,6 +12,7 @@
 class UAbilitySystemComponent;
 class UAttributeSet;
 class UGameplayEffect;
+class UGameplayAbility;
 
 UCLASS(Abstract)
 class AURA_API AAuraCharacterBase : public ACharacter, public IAbilitySystemInterface, public ICombatInterface
@@ -40,6 +41,8 @@ protected:
 
 	void InitDefaultAttributes() const;
 
+	void GiveStartupAbilities() const;
+
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "Aura|AbilitySystem")
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
@@ -62,4 +65,7 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Aura|Combat", Meta = (AllowPrivateAccess = "true"))
 	FName WeaponSocket;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Aura|Abilities", Meta = (AllowPrivateAccess = "true"))
+	TArray<TSubclassOf<UGameplayAbility>> StartupAbilities;
 };
