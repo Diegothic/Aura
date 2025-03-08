@@ -69,4 +69,30 @@ void FAuraGameplayTags::Init()
 		FName("Attribute.Secondary.ManaRegeneration"),
 		FString("Amount of Mana regenerated every second")
 	);
+
+	// Input Tags
+	Instance.Input_LMB = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Input.LMB"),
+		FString("Left Mouse Button Input")
+	);
+	Instance.Input_RMB = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Input.RMB"),
+		FString("Right Mouse Button Input")
+	);
+	Instance.Input_1 = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Input.1"),
+		FString("Key 1 Input")
+	);
+	Instance.Input_2 = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Input.2"),
+		FString("Key 2 Input")
+	);
+	Instance.Input_3 = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Input.3"),
+		FString("Key 3 Input")
+	);
+	Instance.Input_4 = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Input.4"),
+		FString("Key 4 Input")
+	);
 }
