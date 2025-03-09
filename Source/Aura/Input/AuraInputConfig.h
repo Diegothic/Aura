@@ -29,6 +29,11 @@ class AURA_API UAuraInputConfig : public UDataAsset
 public:
 	TOptional<const UInputAction*> FindAbilityInputAction(const FGameplayTag& InputTag, bool bLogNotFound) const;
 
+	FORCEINLINE TConstArrayView<const FAuraInputAction> GetAbilityInputActions() const
+	{
+		return TConstArrayView<const FAuraInputAction>(AbilityInputActions);
+	}
+
 private:
 	UPROPERTY(EditdefaultsOnly, BlueprintReadOnly, Category = "Aura|Input", meta = (AllowPrivateAccess = "true"))
 	TArray<FAuraInputAction> AbilityInputActions;

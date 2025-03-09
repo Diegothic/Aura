@@ -7,7 +7,10 @@
 
 #include "AuraPlayerController.generated.h"
 
+class UAuraInputConfig;
 class ITargetInterface;
+struct FInputActionValue;
+struct FGameplayTag;
 
 UCLASS()
 class AURA_API AAuraPlayerController : public APlayerController
@@ -30,7 +33,11 @@ protected:
 	//~ End AActor Interface
 
 private:
-	void OnMoveTriggered(const struct FInputActionValue& Value);
+	void OnMoveTriggered(const FInputActionValue& Value);
+
+	void OnAbilityActionPressed(FGameplayTag InputTag);
+	void OnAbilityActionReleased(FGameplayTag InputTag);
+	void OnAbilityActionHeld(FGameplayTag InputTag);
 
 	void CursorTrace();
 
@@ -40,6 +47,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Aura|Input", Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UInputAction> MoveInputAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Aura|Input", Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UAuraInputConfig> InputConfig;
 
 	TScriptInterface<ITargetInterface> LastTarget;
 	TScriptInterface<ITargetInterface> CurrentTarget;

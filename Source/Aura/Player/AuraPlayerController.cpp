@@ -4,8 +4,10 @@
 #include "AuraPlayerController.h"
 
 #include "EnhancedInputSubsystems.h"
-#include "EnhancedInputComponent.h"
+#include "Input/AuraInputComponent.h"
 #include "Interaction/TargetInterface.h"
+#include "GameplayTagContainer.h"
+
 
 AAuraPlayerController::AAuraPlayerController()
 {
@@ -49,13 +51,21 @@ void AAuraPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
 
-	UEnhancedInputComponent* const EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent);
+	UAuraInputComponent* const AuraInputComponent = CastChecked<UAuraInputComponent>(InputComponent);
 
-	EnhancedInputComponent->BindAction(
+	AuraInputComponent->BindAction(
 		MoveInputAction,
 		ETriggerEvent::Triggered,
 		this,
-		&AAuraPlayerController::OnMoveTriggered
+		&ThisClass::OnMoveTriggered
+	);
+
+	AuraInputComponent->BindAbilityActions(
+		InputConfig,
+		this,
+		&ThisClass::OnAbilityActionPressed,
+		&ThisClass::OnAbilityActionReleased,
+		&ThisClass::OnAbilityActionHeld
 	);
 }
 
@@ -84,6 +94,21 @@ void AAuraPlayerController::OnMoveTriggered(const FInputActionValue& Value)
 			MovementScale
 		);
 	}
+}
+
+void AAuraPlayerController::OnAbilityActionPressed(FGameplayTag InputTag)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Ability action pressed: %s"), *InputTag.ToString());
+}
+
+void AAuraPlayerController::OnAbilityActionReleased(FGameplayTag InputTag)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Ability action released: %s"), *InputTag.ToString());
+}
+
+void AAuraPlayerController::OnAbilityActionHeld(FGameplayTag InputTag)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Ability action held: %s"), *InputTag.ToString());
 }
 
 void AAuraPlayerController::CursorTrace()

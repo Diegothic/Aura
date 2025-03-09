@@ -3,6 +3,7 @@
 
 #include "AuraInputConfig.h"
 
+
 TOptional<const UInputAction*> UAuraInputConfig::FindAbilityInputAction(
 	const FGameplayTag& InputTag,
 	bool bLogNotFound
