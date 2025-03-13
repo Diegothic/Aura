@@ -22,6 +22,9 @@ public:
 public:
 	void GiveAbilities(const TArray<TSubclassOf<UGameplayAbility>>& InAbilities);
 
+	void AbilityInputTagHeld(const FGameplayTag& InputTag);
+	void AbilityInputTagReleased(const FGameplayTag& InputTag);
+
 protected:
 	void OnGameplayEffectApplied(
 		UAbilitySystemComponent* InAbilitySystemComponent,

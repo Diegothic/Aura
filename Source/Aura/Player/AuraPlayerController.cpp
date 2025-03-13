@@ -3,10 +3,12 @@
 
 #include "AuraPlayerController.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "EnhancedInputSubsystems.h"
 #include "Input/AuraInputComponent.h"
 #include "Interaction/TargetInterface.h"
 #include "GameplayTagContainer.h"
+#include "AbilitySystem/AuraAbilitySystemComponent.h"
 
 
 AAuraPlayerController::AAuraPlayerController()
@@ -98,17 +100,22 @@ void AAuraPlayerController::OnMoveTriggered(const FInputActionValue& Value)
 
 void AAuraPlayerController::OnAbilityActionPressed(FGameplayTag InputTag)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Ability action pressed: %s"), *InputTag.ToString());
 }
 
 void AAuraPlayerController::OnAbilityActionReleased(FGameplayTag InputTag)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Ability action released: %s"), *InputTag.ToString());
+	if (UAuraAbilitySystemComponent* const ASC = GetAuraASC())
+	{
+		ASC->AbilityInputTagReleased(InputTag);
+	}
 }
 
 void AAuraPlayerController::OnAbilityActionHeld(FGameplayTag InputTag)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Ability action held: %s"), *InputTag.ToString());
+	if (UAuraAbilitySystemComponent* const ASC = GetAuraASC())
+	{
+		ASC->AbilityInputTagHeld(InputTag);
+	}
 }
 
 void AAuraPlayerController::CursorTrace()
@@ -136,4 +143,16 @@ void AAuraPlayerController::CursorTrace()
 			CurrentTarget->HighlightActor();
 		}
 	}
+}
+
+UAuraAbilitySystemComponent* AAuraPlayerController::GetAuraASC()
+{
+	if (!AuraAbilitySystemComponent)
+	{
+		UAbilitySystemComponent* const ASC
+			= UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetPawn<APawn>());
+		AuraAbilitySystemComponent = Cast<UAuraAbilitySystemComponent>(ASC);
+	}
+
+	return AuraAbilitySystemComponent;
 }

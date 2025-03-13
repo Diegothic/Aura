@@ -9,6 +9,7 @@
 
 class UAuraInputConfig;
 class ITargetInterface;
+class UAuraAbilitySystemComponent;
 struct FInputActionValue;
 struct FGameplayTag;
 
@@ -42,6 +43,9 @@ private:
 	void CursorTrace();
 
 private:
+	UAuraAbilitySystemComponent* GetAuraASC();
+
+private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Aura|Input", Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UInputMappingContext> InputMappingContext;
 
@@ -50,6 +54,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Aura|Input", Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UAuraInputConfig> InputConfig;
+
+	UPROPERTY()
+	TObjectPtr<UAuraAbilitySystemComponent> AuraAbilitySystemComponent;
 
 	TScriptInterface<ITargetInterface> LastTarget;
 	TScriptInterface<ITargetInterface> CurrentTarget;
