@@ -10,6 +10,7 @@
 class UAuraInputConfig;
 class ITargetInterface;
 class UAuraAbilitySystemComponent;
+class USplineComponent;
 struct FInputActionValue;
 struct FGameplayTag;
 
@@ -60,4 +61,17 @@ private:
 
 	TScriptInterface<ITargetInterface> LastTarget;
 	TScriptInterface<ITargetInterface> CurrentTarget;
+	bool bIsTargeting = false;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Aura|Movement", Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USplineComponent> SplineComponent;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Aura|Movement")
+	float ShortPressThreshold = 0.2f;
+	UPROPERTY(EditDefaultsOnly, Category = "Aura|Movement")
+	float AutoRunAcceptanceRadius = 50.0f;
+
+	FVector CachedDestination = FVector::ZeroVector;
+	float CursorTraceTime = 0.0f;
+	bool bIsAutoRunning = false;
 };

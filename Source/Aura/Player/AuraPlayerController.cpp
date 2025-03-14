@@ -9,11 +9,15 @@
 #include "Interaction/TargetInterface.h"
 #include "GameplayTagContainer.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
+#include "Components/SplineComponent.h"
+#include "GameplayTags/AuraGameplayTags.h"
 
 
 AAuraPlayerController::AAuraPlayerController()
 {
 	bReplicates = true;
+
+	SplineComponent = CreateDefaultSubobject<USplineComponent>(TEXT("SplineComponent"));
 }
 
 void AAuraPlayerController::PlayerTick(float DeltaTime)
@@ -100,6 +104,11 @@ void AAuraPlayerController::OnMoveTriggered(const FInputActionValue& Value)
 
 void AAuraPlayerController::OnAbilityActionPressed(FGameplayTag InputTag)
 {
+	if (InputTag.MatchesTagExact(FAuraGameplayTags::Get().Input_LMB))
+	{
+		bIsTargeting = CurrentTarget != nullptr;
+		bIsAutoRunning = false;
+	}
 }
 
 void AAuraPlayerController::OnAbilityActionReleased(FGameplayTag InputTag)
@@ -112,9 +121,35 @@ void AAuraPlayerController::OnAbilityActionReleased(FGameplayTag InputTag)
 
 void AAuraPlayerController::OnAbilityActionHeld(FGameplayTag InputTag)
 {
-	if (UAuraAbilitySystemComponent* const ASC = GetAuraASC())
+	if (bIsTargeting || !InputTag.MatchesTagExact(FAuraGameplayTags::Get().Input_LMB))
 	{
-		ASC->AbilityInputTagHeld(InputTag);
+		if (UAuraAbilitySystemComponent* const ASC = GetAuraASC())
+		{
+			ASC->AbilityInputTagHeld(InputTag);
+		}
+	}
+	else
+	{
+		CursorTraceTime += GetWorld()->GetDeltaSeconds();
+		FHitResult CursorHit;
+		if (GetHitResultUnderCursor(ECC_Camera, false, CursorHit))
+		{
+			CachedDestination = CursorHit.Location;
+		}
+
+		if (CursorTraceTime > ShortPressThreshold)
+		{
+			if (APawn* const ControlledPawn = GetPawn<APawn>())
+			{
+				const FVector PawnLocation = ControlledPawn->GetActorLocation();
+				const FVector ToDestination = CachedDestination - PawnLocation;
+				if (ToDestination.SizeSquared() > AutoRunAcceptanceRadius * AutoRunAcceptanceRadius)
+				{
+					const FVector MovementDirection = (CachedDestination - PawnLocation).GetSafeNormal();
+					ControlledPawn->AddMovementInput(MovementDirection);
+				}
+			}
+		}
 	}
 }
 
