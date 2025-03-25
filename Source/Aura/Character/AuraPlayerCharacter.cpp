@@ -29,7 +29,7 @@ AAuraPlayerCharacter::AAuraPlayerCharacter()
 
 	UCharacterMovementComponent* const Movement = GetCharacterMovement();
 	Movement->bOrientRotationToMovement = true;
-	Movement->RotationRate = FRotator(0.0, 540.0, 0.0);
+	Movement->RotationRate = FRotator(0.0, 720.0, 0.0);
 	Movement->bConstrainToPlane = true;
 	Movement->bSnapToPlaneAtStart = true;
 

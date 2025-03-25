@@ -43,6 +43,8 @@ private:
 
 	void CursorTrace();
 
+	bool AutoRun() const;
+
 private:
 	UAuraAbilitySystemComponent* GetAuraASC();
 
