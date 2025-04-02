@@ -61,6 +61,8 @@ private:
 	UPROPERTY()
 	TObjectPtr<UAuraAbilitySystemComponent> AuraAbilitySystemComponent;
 
+	FHitResult CursorHit;
+
 	TScriptInterface<ITargetInterface> LastTarget;
 	TScriptInterface<ITargetInterface> CurrentTarget;
 	bool bIsTargeting = false;

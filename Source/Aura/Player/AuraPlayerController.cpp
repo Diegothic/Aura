@@ -148,7 +148,6 @@ void AAuraPlayerController::OnAbilityActionReleased(FGameplayTag InputTag)
 					for (const FVector& PointLocation : NavPath->PathPoints)
 					{
 						SplineComponent->AddSplinePoint(PointLocation, ESplineCoordinateSpace::World, false);
-						DrawDebugSphere(GetWorld(), PointLocation, 8.0f, 8, FColor::Green, false, 3.0f);
 					}
 					SplineComponent->UpdateSpline();
 
@@ -175,8 +174,7 @@ void AAuraPlayerController::OnAbilityActionHeld(FGameplayTag InputTag)
 	else
 	{
 		CursorTraceTime += GetWorld()->GetDeltaSeconds();
-		FHitResult CursorHit;
-		if (GetHitResultUnderCursor(ECC_Camera, false, CursorHit))
+		if (CursorHit.bBlockingHit)
 		{
 			CachedDestination = CursorHit.Location;
 
@@ -233,12 +231,10 @@ void AAuraPlayerController::OnAbilityActionHeld(FGameplayTag InputTag)
 
 void AAuraPlayerController::CursorTrace()
 {
-	LastTarget = CurrentTarget;
-
-	// Update current target
-	FHitResult CursorHit;
 	const bool bHit = GetHitResultUnderCursor(ECC_Camera, false, CursorHit)
 		&& CursorHit.bBlockingHit;
+
+	LastTarget = CurrentTarget;
 	AActor* const HitActor = bHit ? CursorHit.GetActor() : nullptr;
 	CurrentTarget = HitActor && HitActor->Implements<UTargetInterface>()
 		                ? TScriptInterface<ITargetInterface>(HitActor)
