@@ -34,6 +34,10 @@ public:
 public:
 	FORCEINLINE USkeletalMeshComponent* GetWeapon() const { return Weapon; }
 
+	//~ Begin ICombatInterface Interface
+	virtual FVector GetCombatSocketLocation() const override;
+	//~ End ICombatInterface Interface
+
 protected:
 	virtual void InitAbilityActorInfo();
 
@@ -65,6 +69,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Aura|Combat", Meta = (AllowPrivateAccess = "true"))
 	FName WeaponSocket;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Aura|Combat", Meta = (AllowPrivateAccess = "true"))
+	FName WeaponSpellSocket;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Aura|Abilities", Meta = (AllowPrivateAccess = "true"))
 	TArray<TSubclassOf<UGameplayAbility>> StartupAbilities;
