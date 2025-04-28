@@ -19,6 +19,9 @@ public class Aura : ModuleRules
 		// Slate UI
 		PrivateDependencyModuleNames.AddRange(new string[] {"Slate", "SlateCore"});
 
+		// Navigation System
+		PrivateDependencyModuleNames.AddRange(new string[] {"NavigationSystem"});
+
 		// Uncomment if you are using online features
 		// PrivateDependencyModuleNames.Add("OnlineSubsystem");
 

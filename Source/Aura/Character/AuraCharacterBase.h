@@ -12,6 +12,7 @@
 class UAbilitySystemComponent;
 class UAttributeSet;
 class UGameplayEffect;
+class UGameplayAbility;
 
 UCLASS(Abstract)
 class AURA_API AAuraCharacterBase : public ACharacter, public IAbilitySystemInterface, public ICombatInterface
@@ -33,12 +34,18 @@ public:
 public:
 	FORCEINLINE USkeletalMeshComponent* GetWeapon() const { return Weapon; }
 
+	//~ Begin ICombatInterface Interface
+	virtual FVector GetCombatSocketLocation() const override;
+	//~ End ICombatInterface Interface
+
 protected:
 	virtual void InitAbilityActorInfo();
 
 	void ApplyEffectToSelf(const TSubclassOf<UGameplayEffect>& EffectClass, float Level) const;
 
 	void InitDefaultAttributes() const;
+
+	void GiveStartupAbilities() const;
 
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "Aura|AbilitySystem")
@@ -62,4 +69,10 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Aura|Combat", Meta = (AllowPrivateAccess = "true"))
 	FName WeaponSocket;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Aura|Combat", Meta = (AllowPrivateAccess = "true"))
+	FName WeaponSpellSocket;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Aura|Abilities", Meta = (AllowPrivateAccess = "true"))
+	TArray<TSubclassOf<UGameplayAbility>> StartupAbilities;
 };

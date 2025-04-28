@@ -29,7 +29,7 @@ AAuraPlayerCharacter::AAuraPlayerCharacter()
 
 	UCharacterMovementComponent* const Movement = GetCharacterMovement();
 	Movement->bOrientRotationToMovement = true;
-	Movement->RotationRate = FRotator(0.0, 540.0, 0.0);
+	Movement->RotationRate = FRotator(0.0, 720.0, 0.0);
 	Movement->bConstrainToPlane = true;
 	Movement->bSnapToPlaneAtStart = true;
 
@@ -50,6 +50,9 @@ void AAuraPlayerCharacter::PossessedBy(AController* NewController)
 
 	// Init HUD for the Server
 	InitHUD();
+
+	// Give startup abilities - only for the Server since it's replicated
+	GiveStartupAbilities();
 }
 
 void AAuraPlayerCharacter::OnRep_PlayerState()
