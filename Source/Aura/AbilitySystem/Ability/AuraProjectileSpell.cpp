@@ -15,7 +15,11 @@ void UAuraProjectileSpell::ActivateAbility(
 )
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+}
 
+void UAuraProjectileSpell::SpawnProjectile()
+{
+	const FGameplayAbilityActivationInfo ActivationInfo = GetCurrentActivationInfo();
 	if (HasAuthority(&ActivationInfo))
 	{
 		AActor* const OwningActor = GetOwningActorFromActorInfo();
