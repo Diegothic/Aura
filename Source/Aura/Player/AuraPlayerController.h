@@ -8,6 +8,7 @@
 #include "AuraPlayerController.generated.h"
 
 class UAuraInputConfig;
+class UInputAction;
 class ITargetInterface;
 class UAuraAbilitySystemComponent;
 class USplineComponent;
@@ -37,6 +38,9 @@ protected:
 private:
 	void OnMoveTriggered(const FInputActionValue& Value);
 
+	void OnCombatActionStarted();
+	void OnCombatActionCompleted();
+
 	void OnAbilityActionPressed(FGameplayTag InputTag);
 	void OnAbilityActionReleased(FGameplayTag InputTag);
 	void OnAbilityActionHeld(FGameplayTag InputTag);
@@ -53,7 +57,10 @@ private:
 	TObjectPtr<class UInputMappingContext> InputMappingContext;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Aura|Input", Meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<class UInputAction> MoveInputAction;
+	TObjectPtr<UInputAction> MoveInputAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Aura|Input", Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> CombatInputAction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Aura|Input", Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UAuraInputConfig> InputConfig;
@@ -78,4 +85,6 @@ private:
 	FVector CachedDestination = FVector::ZeroVector;
 	float CursorTraceTime = 0.0f;
 	bool bIsAutoRunning = false;
+
+	bool bCombatActionActive = false;
 };

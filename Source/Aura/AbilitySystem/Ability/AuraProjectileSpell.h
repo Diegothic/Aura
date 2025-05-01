@@ -20,7 +20,7 @@ protected:
 	) override;
 
 	UFUNCTION(BlueprintCallable, Category = "Aura|Spell")
-	void SpawnProjectile();
+	void SpawnProjectile(const FVector& TargetLocation);
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Aura|Spell", meta = (AllowPrivateAccess = "true"))
