@@ -22,6 +22,9 @@ public class Aura : ModuleRules
 		// Navigation System
 		PrivateDependencyModuleNames.AddRange(new string[] {"NavigationSystem"});
 
+		// Niagara Particle System
+		PrivateDependencyModuleNames.AddRange(new string[] {"Niagara"});
+
 		// Uncomment if you are using online features
 		// PrivateDependencyModuleNames.Add("OnlineSubsystem");
 
