@@ -13,3 +13,7 @@ FVector ICombatInterface::GetCombatSocketLocation() const
 {
 	return FVector::ZeroVector;
 }
+
+void ICombatInterface::SetFacingTagetLocation_Implementation(const FVector& TargetLocation)
+{
+}
