@@ -5,6 +5,7 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
+#include "Collision/AuraCollisionChannels.h"
 
 
 AAuraEffectActor::AAuraEffectActor()
@@ -13,6 +14,20 @@ AAuraEffectActor::AAuraEffectActor()
 
 	USceneComponent* const NewRootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
 	SetRootComponent(NewRootComponent);
+}
+
+void AAuraEffectActor::OnConstruction(const FTransform& Transform)
+{
+	Super::OnConstruction(Transform);
+
+	const TSet<UActorComponent*>& Components = GetComponents();
+	for (UActorComponent* const Component : Components)
+	{
+		if (UPrimitiveComponent* const PrimitiveComponent = Cast<UPrimitiveComponent>(Component))
+		{
+			PrimitiveComponent->SetCollisionResponseToChannel(ECC_Projectile, ECR_Ignore);
+		}
+	}
 }
 
 void AAuraEffectActor::BeginPlay()
