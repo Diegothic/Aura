@@ -67,4 +67,6 @@ void AAuraEnemyCharacter::InitAbilityActorInfo()
 
 	UAuraAbilitySystemComponent* const AuraASC = Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent);
 	AuraASC->AbilityActorInfoSet();
+
+	InitDefaultAttributes();
 }

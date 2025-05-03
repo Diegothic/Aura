@@ -3,6 +3,8 @@
 
 #include "AuraProjectile.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
+#include "AbilitySystemComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "Collision/AuraCollisionChannels.h"
 #include "Components/SphereComponent.h"
@@ -85,6 +87,17 @@ void AAuraProjectile::OnSphereOverlap(
 	if (HasAuthority())
 	{
 		MulticastOnHit(SweepResult);
+
+		if (DamageEffectSpecHandle.IsValid())
+		{
+			if (UAbilitySystemComponent* const TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(
+				OtherActor
+			))
+			{
+				TargetASC->ApplyGameplayEffectSpecToSelf(*DamageEffectSpecHandle.Data);
+			}
+		}
+
 		Destroy();
 	}
 }

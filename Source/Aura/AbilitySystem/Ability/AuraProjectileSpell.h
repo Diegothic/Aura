@@ -25,4 +25,7 @@ protected:
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Aura|Spell", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<class AAuraProjectile> ProjectileClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Aura|Spell", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<UGameplayEffect> DamageGameplayEffect;
 };

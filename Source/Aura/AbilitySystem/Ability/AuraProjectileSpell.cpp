@@ -3,6 +3,7 @@
 
 #include "AuraProjectileSpell.h"
 
+#include "AbilitySystemComponent.h"
 #include "Actor/AuraProjectile.h"
 #include "Interaction/CombatInterface.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -45,7 +46,19 @@ void UAuraProjectileSpell::SpawnProjectile(const FVector& TargetLocation)
 			ESpawnActorCollisionHandlingMethod::AlwaysSpawn
 		);
 
-		// TODO: Give the projectile a Gameplay Effect Spec for causing Damage
+		const UAbilitySystemComponent* const ASC = GetAbilitySystemComponentFromActorInfo();
+		if (IsValid(ASC))
+		{
+			const FGameplayEffectContextHandle EffectContext = ASC->MakeEffectContext();
+			const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(
+				DamageGameplayEffect,
+				GetAbilityLevel(),
+				EffectContext
+			);
+
+			SpawnedProjectile->SetDamageEffectSpecHandle(EffectSpecHandle);
+		}
+
 
 		SpawnedProjectile->FinishSpawning(SpawnTransform);
 	}

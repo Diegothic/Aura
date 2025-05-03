@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayEffectTypes.h"
 #include "GameFramework/Actor.h"
 #include "AuraProjectile.generated.h"
 
@@ -27,6 +28,12 @@ public:
 	FORCEINLINE const UProjectileMovementComponent* GetProjectileMovement() const
 	{
 		return ProjectileMovement;
+	}
+
+	FORCEINLINE const FGameplayEffectSpecHandle& GetDamageEffectSpecHandle() const { return DamageEffectSpecHandle; }
+	FORCEINLINE void SetDamageEffectSpecHandle(const FGameplayEffectSpecHandle& InDamageEffectSpecHandle)
+	{
+		DamageEffectSpecHandle = InDamageEffectSpecHandle;
 	}
 
 private:
@@ -83,4 +90,8 @@ private:
 	FTimerHandle LifeTimerHandle;
 
 	bool bHit = false;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Aura|Projectile",
+		meta = (AllowPrivateAccess = "true", ExposeOnSpawn = true))
+	FGameplayEffectSpecHandle DamageEffectSpecHandle;
 };
