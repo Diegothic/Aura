@@ -77,6 +77,19 @@ void AAuraPlayerController::SetupInputComponent()
 		&ThisClass::OnMoveTriggered
 	);
 
+	AuraInputComponent->BindAction(
+		CombatInputAction,
+		ETriggerEvent::Started,
+		this,
+		&ThisClass::OnCombatActionStarted
+	);
+	AuraInputComponent->BindAction(
+		CombatInputAction,
+		ETriggerEvent::Completed,
+		this,
+		&ThisClass::OnCombatActionCompleted
+	);
+
 	AuraInputComponent->BindAbilityActions(
 		InputConfig,
 		this,
@@ -113,6 +126,16 @@ void AAuraPlayerController::OnMoveTriggered(const FInputActionValue& Value)
 	}
 }
 
+void AAuraPlayerController::OnCombatActionStarted()
+{
+	bCombatActionActive = true;
+}
+
+void AAuraPlayerController::OnCombatActionCompleted()
+{
+	bCombatActionActive = false;
+}
+
 void AAuraPlayerController::OnAbilityActionPressed(FGameplayTag InputTag)
 {
 	if (InputTag.MatchesTagExact(FAuraGameplayTags::Get().Input_LMB))
@@ -124,14 +147,12 @@ void AAuraPlayerController::OnAbilityActionPressed(FGameplayTag InputTag)
 
 void AAuraPlayerController::OnAbilityActionReleased(FGameplayTag InputTag)
 {
-	if (bIsTargeting || !InputTag.MatchesTagExact(FAuraGameplayTags::Get().Input_LMB))
+	if (UAuraAbilitySystemComponent* const ASC = GetAuraASC())
 	{
-		if (UAuraAbilitySystemComponent* const ASC = GetAuraASC())
-		{
-			ASC->AbilityInputTagReleased(InputTag);
-		}
+		ASC->AbilityInputTagReleased(InputTag);
 	}
-	else
+
+	if (!bCombatActionActive && !bIsTargeting)
 	{
 		if (CursorTraceTime <= ShortPressThreshold)
 		{
@@ -164,7 +185,7 @@ void AAuraPlayerController::OnAbilityActionReleased(FGameplayTag InputTag)
 
 void AAuraPlayerController::OnAbilityActionHeld(FGameplayTag InputTag)
 {
-	if (bIsTargeting || !InputTag.MatchesTagExact(FAuraGameplayTags::Get().Input_LMB))
+	if (bCombatActionActive || bIsTargeting || !InputTag.MatchesTagExact(FAuraGameplayTags::Get().Input_LMB))
 	{
 		if (UAuraAbilitySystemComponent* const ASC = GetAuraASC())
 		{

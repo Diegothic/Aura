@@ -8,6 +8,10 @@
 
 #include "AuraEnemyCharacter.generated.h"
 
+class UWidgetComponent;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEnemyAttributeChangedSignature, float, NewValue);
+
 UCLASS()
 class AURA_API AAuraEnemyCharacter : public AAuraCharacterBase, public ITargetInterface
 {
@@ -18,7 +22,14 @@ public:
 
 	//~ Begin AActor Interface
 	virtual void PostInitializeComponents() override;
+	virtual void BeginPlay() override;
 	//~ End AActor Interface
+
+	UPROPERTY(BlueprintAssignable, Category = "Aura|AbilitySystem|Attributes")
+	FOnEnemyAttributeChangedSignature OnHealthChanged;
+
+	UPROPERTY(BlueprintAssignable, Category = "Aura|AbilitySystem|Attributes")
+	FOnEnemyAttributeChangedSignature OnMaxHealthChanged;
 
 public:
 	//~ Begin ITargetInterface Interface
@@ -32,6 +43,8 @@ public:
 
 protected:
 	virtual void InitAbilityActorInfo() override;
+	void BindCallbacksToAttributeChanges() const;
+	void BroadcastInitialAttributeValues() const;
 
 private:
 	UPROPERTY(BlueprintReadOnly, Transient, Category = "Aura|Target", Meta = (AllowPrivateAccess = "true"))
@@ -39,4 +52,7 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Aura|Combat", Meta = (AllowPrivateAccess = "true"))
 	int32 Level = 1;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Aura|Combat", Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UWidgetComponent> HealthBar;
 };

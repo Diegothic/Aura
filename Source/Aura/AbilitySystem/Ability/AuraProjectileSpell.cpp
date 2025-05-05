@@ -3,8 +3,10 @@
 
 #include "AuraProjectileSpell.h"
 
+#include "AbilitySystemComponent.h"
 #include "Actor/AuraProjectile.h"
 #include "Interaction/CombatInterface.h"
+#include "Kismet/KismetMathLibrary.h"
 
 
 void UAuraProjectileSpell::ActivateAbility(
@@ -15,7 +17,11 @@ void UAuraProjectileSpell::ActivateAbility(
 )
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+}
 
+void UAuraProjectileSpell::SpawnProjectile(const FVector& TargetLocation)
+{
+	const FGameplayAbilityActivationInfo ActivationInfo = GetCurrentActivationInfo();
 	if (HasAuthority(&ActivationInfo))
 	{
 		AActor* const OwningActor = GetOwningActorFromActorInfo();
@@ -25,10 +31,11 @@ void UAuraProjectileSpell::ActivateAbility(
 		if (const ICombatInterface* const CombatInterface = Cast<ICombatInterface>(AvatarActor))
 		{
 			const FVector SpawnLocation = CombatInterface->GetCombatSocketLocation();
-			// TODO: Get rotation to the Target
-			const FRotator SpawnRotation = AvatarActor->GetActorRotation();
+			FRotator SpawnRotation = UKismetMathLibrary::FindLookAtRotation(SpawnLocation, TargetLocation);
+			SpawnRotation.Pitch = 0.0f;
+
 			SpawnTransform.SetLocation(SpawnLocation);
-			SpawnTransform.SetRotation(FQuat(SpawnRotation));
+			SpawnTransform.SetRotation(SpawnRotation.Quaternion());
 		}
 
 		AAuraProjectile* const SpawnedProjectile = GetWorld()->SpawnActorDeferred<AAuraProjectile>(
@@ -39,7 +46,19 @@ void UAuraProjectileSpell::ActivateAbility(
 			ESpawnActorCollisionHandlingMethod::AlwaysSpawn
 		);
 
-		// TODO: Give the projectile a Gameplay Effect Spec for causing Damage
+		const UAbilitySystemComponent* const ASC = GetAbilitySystemComponentFromActorInfo();
+		if (IsValid(ASC))
+		{
+			const FGameplayEffectContextHandle EffectContext = ASC->MakeEffectContext();
+			const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(
+				DamageGameplayEffect,
+				GetAbilityLevel(),
+				EffectContext
+			);
+
+			SpawnedProjectile->SetDamageEffectSpecHandle(EffectSpecHandle);
+		}
+
 
 		SpawnedProjectile->FinishSpawning(SpawnTransform);
 	}

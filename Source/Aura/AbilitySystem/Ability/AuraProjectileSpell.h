@@ -19,7 +19,13 @@ protected:
 		const FGameplayEventData* TriggerEventData
 	) override;
 
+	UFUNCTION(BlueprintCallable, Category = "Aura|Spell")
+	void SpawnProjectile(const FVector& TargetLocation);
+
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Aura|Spell", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<class AAuraProjectile> ProjectileClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Aura|Spell", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<UGameplayEffect> DamageGameplayEffect;
 };

@@ -41,6 +41,10 @@ public:
 	FGameplayTag Input_4;
 	//~ End Input Tags
 
+	//~ Begin Event Tags
+	FGameplayTag Event_Montage_FireBolt;
+	//~ End Event Tags
+
 private:
 	static AURA_API FAuraGameplayTags Instance;
 };

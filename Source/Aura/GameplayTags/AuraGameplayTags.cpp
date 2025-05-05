@@ -95,4 +95,10 @@ void FAuraGameplayTags::Init()
 		FName("Input.4"),
 		FString("Key 4 Input")
 	);
+
+	// Event Tags
+	Instance.Event_Montage_FireBolt = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Event.Montage.FireBolt"),
+		FString("Fire Bolt Montage Event")
+	);
 }

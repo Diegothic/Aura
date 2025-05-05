@@ -5,6 +5,8 @@
 
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "AbilitySystem/AuraAttributeSet.h"
+#include "Components/WidgetComponent.h"
+#include "UI/Widget/AuraUserWidget.h"
 
 
 AAuraEnemyCharacter::AAuraEnemyCharacter()
@@ -18,6 +20,9 @@ AAuraEnemyCharacter::AAuraEnemyCharacter()
 	AttributeSet = CreateDefaultSubobject<UAuraAttributeSet>(TEXT("AttributeSet"));
 
 	bHighlighted = false;
+
+	HealthBar = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthBar"));
+	HealthBar->SetupAttachment(RootComponent);
 }
 
 void AAuraEnemyCharacter::PostInitializeComponents()
@@ -25,6 +30,19 @@ void AAuraEnemyCharacter::PostInitializeComponents()
 	Super::PostInitializeComponents();
 
 	InitAbilityActorInfo();
+	BindCallbacksToAttributeChanges();
+}
+
+void AAuraEnemyCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (UAuraUserWidget* const AuraUserWidget = Cast<UAuraUserWidget>(HealthBar->GetUserWidgetObject()))
+	{
+		AuraUserWidget->SetWidgetController(this);
+	}
+
+	BroadcastInitialAttributeValues();
 }
 
 void AAuraEnemyCharacter::HighlightActor()
@@ -67,4 +85,45 @@ void AAuraEnemyCharacter::InitAbilityActorInfo()
 
 	UAuraAbilitySystemComponent* const AuraASC = Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent);
 	AuraASC->AbilityActorInfoSet();
+
+	InitDefaultAttributes();
+}
+
+void AAuraEnemyCharacter::BindCallbacksToAttributeChanges() const
+{
+	if (!IsValid(AbilitySystemComponent))
+	{
+		return;
+	}
+
+	if (const UAuraAttributeSet* const AuraAS = Cast<UAuraAttributeSet>(AttributeSet))
+	{
+		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AuraAS->GetHealthAttribute()).AddLambda(
+			[this](const FOnAttributeChangeData& Data)
+			{
+				OnHealthChanged.Broadcast(Data.NewValue);
+			}
+		);
+
+		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AuraAS->GetMaxHealthAttribute()).AddLambda(
+			[this](const FOnAttributeChangeData& Data)
+			{
+				OnMaxHealthChanged.Broadcast(Data.NewValue);
+			}
+		);
+	}
+}
+
+void AAuraEnemyCharacter::BroadcastInitialAttributeValues() const
+{
+	if (!IsValid(AbilitySystemComponent))
+	{
+		return;
+	}
+
+	if (const UAuraAttributeSet* const AuraAS = Cast<UAuraAttributeSet>(AttributeSet))
+	{
+		OnHealthChanged.Broadcast(AuraAS->GetHealth());
+		OnMaxHealthChanged.Broadcast(AuraAS->GetMaxHealth());
+	}
 }
