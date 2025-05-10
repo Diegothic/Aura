@@ -163,6 +163,20 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 	{
 		SetMaxMana(FMath::Max(GetMaxMana(), 0.0f));
 	}
+
+	if (ChangedAttribute == GetIncomingDamageAttribute())
+	{
+		const float LocalIncomingDamage = GetIncomingDamage();
+		SetIncomingDamage(0.0f);
+
+		// Ignore negative values of Incoming Damage
+		if (LocalIncomingDamage > 0.0f)
+		{
+			float NewHealth = GetHealth() - LocalIncomingDamage;
+			NewHealth = FMath::Clamp(NewHealth, 0.0f, GetMaxHealth());
+			SetHealth(NewHealth);
+		}
+	}
 }
 
 TOptional<TStaticFuncPtr<FGameplayAttribute()>> UAuraAttributeSet::FindGameplayAttributeGetter(

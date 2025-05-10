@@ -74,7 +74,7 @@ public:
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Vigor);
 	//~ End Primary Attribute Accessors
 
-	//~ Vital Secondary Accessors
+	//~ Secondary Attribute Accessors
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, MaxHealth);
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, MaxMana);
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Armor);
@@ -86,6 +86,10 @@ public:
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, HealthRegeneration);
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, ManaRegeneration);
 	//~ End Secondary Attribute Accessors
+
+	//~ Meta Attribute Accessors
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, IncomingDamage);
+	//~ End Meta Attribute Accessors
 
 	//~ Begin UObject Interface
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
@@ -152,73 +156,78 @@ private:
 private:
 	//~ Vital Attributes
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Health, Category = "Aura|Attributes|Vital",
-		Meta = (AllowPrivateAccess = "true"))
+		meta = (AllowPrivateAccess = "true"))
 	FGameplayAttributeData Health;
 
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Mana, Category = "Aura|Attributes|Vital",
-		Meta = (AllowPrivateAccess = "true"))
+		meta = (AllowPrivateAccess = "true"))
 	FGameplayAttributeData Mana;
 	//~ End Vital Attributes
 
 	//~ Primary Attributes
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Strength, Category = "Aura|Attributes|Primary",
-		Meta = (AllowPrivateAccess = "true"))
+		meta = (AllowPrivateAccess = "true"))
 	FGameplayAttributeData Strength;
 
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Intelligence, Category = "Aura|Attributes|Primary",
-		Meta = (AllowPrivateAccess = "true"))
+		meta = (AllowPrivateAccess = "true"))
 	FGameplayAttributeData Intelligence;
 
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Resilience, Category = "Aura|Attributes|Primary",
-		Meta = (AllowPrivateAccess = "true"))
+		meta = (AllowPrivateAccess = "true"))
 	FGameplayAttributeData Resilience;
 
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Vigor, Category = "Aura|Attributes|Primary",
-		Meta = (AllowPrivateAccess = "true"))
+		meta = (AllowPrivateAccess = "true"))
 	FGameplayAttributeData Vigor;
 	//~ End Primary Attributes
 
 	//~ Secondary Attributes
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxHealth, Category = "Aura|Attributes|Secondary",
-		Meta = (AllowPrivateAccess = "true"))
+		meta = (AllowPrivateAccess = "true"))
 	FGameplayAttributeData MaxHealth;
 
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxMana, Category = "Aura|Attributes|Secondary",
-		Meta = (AllowPrivateAccess = "true"))
+		meta = (AllowPrivateAccess = "true"))
 	FGameplayAttributeData MaxMana;
 
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Armor, Category = "Aura|Attributes|Secondary",
-		Meta = (AllowPrivateAccess = "true"))
+		meta = (AllowPrivateAccess = "true"))
 	FGameplayAttributeData Armor;
 
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ArmorPenetration, Category = "Aura|Attributes|Secondary",
-		Meta = (AllowPrivateAccess = "true"))
+		meta = (AllowPrivateAccess = "true"))
 	FGameplayAttributeData ArmorPenetration;
 
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_BlockChance, Category = "Aura|Attributes|Secondary",
-		Meta = (AllowPrivateAccess = "true"))
+		meta = (AllowPrivateAccess = "true"))
 	FGameplayAttributeData BlockChance;
 
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_CriticalHitChance, Category = "Aura|Attributes|Secondary",
-		Meta = (AllowPrivateAccess = "true"))
+		meta = (AllowPrivateAccess = "true"))
 	FGameplayAttributeData CriticalHitChance;
 
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_CriticalHitDamage, Category = "Aura|Attributes|Secondary",
-		Meta = (AllowPrivateAccess = "true"))
+		meta = (AllowPrivateAccess = "true"))
 	FGameplayAttributeData CriticalHitDamage;
 
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_CriticalHitResistance, Category = "Aura|Attributes|Secondary",
-		Meta = (AllowPrivateAccess = "true"))
+		meta = (AllowPrivateAccess = "true"))
 	FGameplayAttributeData CriticalHitResistance;
 
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_HealthRegeneration, Category = "Aura|Attributes|Secondary",
-		Meta = (AllowPrivateAccess = "true"))
+		meta = (AllowPrivateAccess = "true"))
 	FGameplayAttributeData HealthRegeneration;
 
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ManaRegeneration, Category = "Aura|Attributes|Secondary",
-		Meta = (AllowPrivateAccess = "true"))
+		meta = (AllowPrivateAccess = "true"))
 	FGameplayAttributeData ManaRegeneration;
 	//~ End Secondary Attributes
+
+	//~ Meta Attributes
+	UPROPERTY(BlueprintReadOnly, Category = "Aura|Attributes|Meta", meta = (AllowPrivateAccess = "true"))
+	FGameplayAttributeData IncomingDamage;
+	//~ End Meta Attributes
 
 private:
 	TMap<FGameplayTag, TStaticFuncPtr<FGameplayAttribute()>> GameplayTagToAttributeGetterMap;
