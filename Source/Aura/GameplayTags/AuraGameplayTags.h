@@ -45,6 +45,10 @@ public:
 	FGameplayTag Event_Montage_FireBolt;
 	//~ End Event Tags
 
+	//~ Begin Gameplay Effect Tags
+	FGameplayTag GameplayEffect_Damage;
+	//~ End Gameplay Effect Tags
+
 private:
 	static AURA_API FAuraGameplayTags Instance;
 };
