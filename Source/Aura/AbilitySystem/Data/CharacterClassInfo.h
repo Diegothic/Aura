@@ -7,6 +7,7 @@
 
 #include "CharacterClassInfo.generated.h"
 
+class UGameplayAbility;
 class UGameplayEffect;
 
 UENUM(BlueprintType)
@@ -44,6 +45,11 @@ public:
 		return VitalAttributesGameplayEffect;
 	}
 
+	TConstArrayView<TSubclassOf<UGameplayAbility>> GetCommonAbilities() const
+	{
+		return CommonAbilities;
+	}
+
 private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Aura|CommonClassDefaults",
 		meta = (AllowPrivateAccess = "true"))
@@ -52,6 +58,9 @@ private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Aura|CommonClassDefaults",
 		meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<UGameplayEffect> VitalAttributesGameplayEffect;
+
+	UPROPERTY(EditDefaultsOnly, Category="Aura|CommonClassDefaults")
+	TArray<TSubclassOf<UGameplayAbility>> CommonAbilities;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Aura|ClassDefaults",
 		meta = (AllowPrivateAccess = "true"))

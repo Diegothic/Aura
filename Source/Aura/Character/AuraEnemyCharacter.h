@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AuraCharacterBase.h"
+#include "GameplayTagContainer.h"
 #include "AbilitySystem/Data/CharacterClassInfo.h"
 #include "Aura/Interaction/TargetInterface.h"
 
@@ -42,14 +43,19 @@ public:
 	virtual int32 GetCharacterLevel() const override;
 	//~ End ICombatInterface Interface
 
+	UFUNCTION(BlueprintPure, Category = "Aura|Combat")
+	bool IsReactingToHit() const { return bReactingToHit; }
+
 protected:
 	//~ Begin AAuraCharacterBase Interface
 	virtual void InitAbilityActorInfo() override;
 	virtual void InitDefaultAttributes() const override;
 	//~ End AAuraCharacterBase Interface
 
-	void BindCallbacksToAttributeChanges() const;
+	void BindToAbilitySystemEvents();
 	void BroadcastInitialAttributeValues() const;
+
+	void OnHitReactTagChangedEvent(const FGameplayTag InChangedTag, int32 InNewTagCount);
 
 private:
 	UPROPERTY(BlueprintReadOnly, Transient, Category = "Aura|Target", meta = (AllowPrivateAccess = "true"))
@@ -63,4 +69,6 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Aura|Combat", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UWidgetComponent> HealthBar;
+
+	bool bReactingToHit = false;
 };

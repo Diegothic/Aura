@@ -17,3 +17,8 @@ FVector ICombatInterface::GetCombatSocketLocation() const
 void ICombatInterface::SetFacingTagetLocation_Implementation(const FVector& TargetLocation)
 {
 }
+
+UAnimMontage* ICombatInterface::GetHitReactMontage_Implementation() const
+{
+	return nullptr;
+}
