@@ -5,6 +5,7 @@
 
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
+#include "Components/CapsuleComponent.h"
 
 
 AAuraCharacterBase::AAuraCharacterBase()
@@ -51,6 +52,20 @@ UAnimMontage* AAuraCharacterBase::GetHitReactMontage_Implementation() const
 	return HitReactMontage;
 }
 
+void AAuraCharacterBase::Die()
+{
+	if (IsValid(Weapon))
+	{
+		const FDetachmentTransformRules WeaponDetachmentRules{
+			EDetachmentRule::KeepWorld,
+			true
+		};
+		Weapon->DetachFromComponent(WeaponDetachmentRules);
+	}
+
+	Multicast_HandleDeath();
+}
+
 void AAuraCharacterBase::InitAbilityActorInfo()
 {
 }
@@ -73,6 +88,62 @@ void AAuraCharacterBase::GiveStartupAbilities() const
 	{
 		ASC->GiveAbilities(StartupAbilities);
 	}
+}
+
+void AAuraCharacterBase::Dissolve()
+{
+	TArray<UMaterialInstanceDynamic*> DynamicMaterialsToDissolve;
+
+	if (IsValid(DissolveMaterialInstance))
+	{
+		UMaterialInstanceDynamic* const DissolveMaterialInstanceDynamic = UMaterialInstanceDynamic::Create(
+			DissolveMaterialInstance, this);
+		DynamicMaterialsToDissolve.Emplace(DissolveMaterialInstanceDynamic);
+
+		if (UMeshComponent* const MeshComp = GetMesh(); IsValid(MeshComp))
+		{
+			MeshComp->SetMaterial(0, DissolveMaterialInstanceDynamic);
+		}
+	}
+
+	if (IsValid(WeaponDissolveMaterialInstance))
+	{
+		UMaterialInstanceDynamic* const WeaponDissolveMaterialInstanceDynamic = UMaterialInstanceDynamic::Create(
+			WeaponDissolveMaterialInstance, this);
+		DynamicMaterialsToDissolve.Emplace(WeaponDissolveMaterialInstanceDynamic);
+
+		if (UMeshComponent* const WeaponMeshComp = Weapon; IsValid(WeaponMeshComp))
+		{
+			WeaponMeshComp->SetMaterial(0, WeaponDissolveMaterialInstanceDynamic);
+		}
+	}
+
+	BP_StartDissolveTimeline(DynamicMaterialsToDissolve);
+}
+
+void AAuraCharacterBase::Multicast_HandleDeath_Implementation()
+{
+	if (IsValid(Weapon))
+	{
+		Weapon->SetSimulatePhysics(true);
+		Weapon->SetEnableGravity(true);
+		Weapon->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+	}
+
+	if (UMeshComponent* const MeshComp = GetMesh())
+	{
+		MeshComp->SetSimulatePhysics(true);
+		MeshComp->SetEnableGravity(true);
+		MeshComp->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+		MeshComp->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
+	}
+
+	if (UCapsuleComponent* const CapsuleComp = GetCapsuleComponent())
+	{
+		CapsuleComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	}
+
+	Dissolve();
 }
 
 void AAuraCharacterBase::ApplyEffectToSelf(const TSubclassOf<UGameplayEffect>& EffectClass, float Level) const

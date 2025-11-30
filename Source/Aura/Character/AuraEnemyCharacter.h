@@ -41,6 +41,7 @@ public:
 
 	//~ Begin ICombatInterface Interface
 	virtual int32 GetCharacterLevel() const override;
+	virtual void Die() override;
 	//~ End ICombatInterface Interface
 
 	UFUNCTION(BlueprintPure, Category = "Aura|Combat")
@@ -69,6 +70,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Aura|Combat", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UWidgetComponent> HealthBar;
+
+	UPROPERTY(EditAnywhere, Category = "Aura|Combat", meta = (ForceUnits = "s"))
+	float DeathLifeSpan = 5.0f;
 
 	bool bReactingToHit = false;
 };

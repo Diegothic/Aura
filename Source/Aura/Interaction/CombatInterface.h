@@ -30,4 +30,6 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Aura|Combat")
 	UAnimMontage* GetHitReactMontage() const;
 	virtual UAnimMontage* GetHitReactMontage_Implementation() const;
+	
+	virtual void Die();
 };

@@ -38,6 +38,7 @@ public:
 	//~ Begin ICombatInterface Interface
 	virtual FVector GetCombatSocketLocation() const override;
 	virtual UAnimMontage* GetHitReactMontage_Implementation() const override;
+	virtual void Die() override;
 	//~ End ICombatInterface Interface
 
 protected:
@@ -49,12 +50,26 @@ protected:
 
 	void GiveStartupAbilities() const;
 
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_HandleDeath();
+
+	void Dissolve();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void BP_StartDissolveTimeline(const TArray<UMaterialInstanceDynamic*>& DynamicMaterialInstances);
+
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "Aura|AbilitySystem")
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
 
 	UPROPERTY()
 	TObjectPtr<UAttributeSet> AttributeSet;
+
+	UPROPERTY(EditAnywhere, Category = "Aura|Dissolve")
+	TObjectPtr<UMaterialInstance> DissolveMaterialInstance;
+
+	UPROPERTY(EditAnywhere, Category = "Aura|Dissolve")
+	TObjectPtr<UMaterialInstance> WeaponDissolveMaterialInstance;
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Aura|Attributes", Meta = (AllowPrivateAccess = "true"))
