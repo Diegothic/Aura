@@ -5,10 +5,10 @@
 
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/AuraAttributeSet.h"
+#include "GameplayTags/AuraGameplayTags.h"
 
 struct FAuraDamageStatics
 {
-public:
 	FAuraDamageStatics()
 	{
 		ArmorProperty = UAuraAttributeSet::GetArmorAttribute().GetUProperty();
@@ -17,10 +17,20 @@ public:
 			EGameplayEffectAttributeCaptureSource::Target,
 			false
 		};
+
+		BlockChanceProperty = UAuraAttributeSet::GetBlockChanceAttribute().GetUProperty();
+		BlockChanceDef = FGameplayEffectAttributeCaptureDefinition{
+			BlockChanceProperty,
+			EGameplayEffectAttributeCaptureSource::Target,
+			false
+		};
 	}
 
 	FProperty* ArmorProperty;
 	FGameplayEffectAttributeCaptureDefinition ArmorDef;
+
+	FProperty* BlockChanceProperty;
+	FGameplayEffectAttributeCaptureDefinition BlockChanceDef;
 };
 
 static const FAuraDamageStatics& DamageStatics()
@@ -32,6 +42,7 @@ static const FAuraDamageStatics& DamageStatics()
 UAuraExecutionCalculation_Damage::UAuraExecutionCalculation_Damage()
 {
 	RelevantAttributesToCapture.Emplace(DamageStatics().ArmorDef);
+	RelevantAttributesToCapture.Emplace(DamageStatics().BlockChanceDef);
 }
 
 void UAuraExecutionCalculation_Damage::Execute_Implementation(
@@ -54,18 +65,25 @@ void UAuraExecutionCalculation_Damage::Execute_Implementation(
 	EvalParams.SourceTags = SourceTags;
 	EvalParams.TargetTags = TargetTags;
 
-	float ArmorMagnitude = 0.0f;
-	if (ExecutionParams.
-		AttemptCalculateCapturedAttributeMagnitude(DamageStatics().ArmorDef, EvalParams, ArmorMagnitude))
+	float FinalDamage = Spec.GetSetByCallerMagnitude(FAuraGameplayTags::Get().GameplayEffect_Damage);
+
+	float BlockChanceMagnitude = 0.0f;
+	if (ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().BlockChanceDef, EvalParams,
+	                                                               BlockChanceMagnitude))
 	{
-		ArmorMagnitude = FMath::Max(ArmorMagnitude, 0.0f);
+		BlockChanceMagnitude = FMath::Clamp(BlockChanceMagnitude, 0.0f, 100.0f);
 	}
-	ArmorMagnitude += 1.0f;
+
+	const bool bBlocked = BlockChanceMagnitude != 0.0f && FMath::RandRange(0.0f, 100.0f) <= BlockChanceMagnitude;
+	if (bBlocked)
+	{
+		FinalDamage *= 0.5f;
+	}
 
 	const FGameplayModifierEvaluatedData OutEvalData{
-		DamageStatics().ArmorProperty,
-		EGameplayModOp::AddBase,
-		ArmorMagnitude
+		UAuraAttributeSet::GetIncomingDamageAttribute(),
+		EGameplayModOp::Additive,
+		FinalDamage
 	};
 	OutExecutionOutput.AddOutputModifier(OutEvalData);
 }
