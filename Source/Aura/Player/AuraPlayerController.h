@@ -7,6 +7,7 @@
 
 #include "AuraPlayerController.generated.h"
 
+class UDamageTextComponent;
 class UAuraInputConfig;
 class UInputAction;
 class ITargetInterface;
@@ -22,6 +23,9 @@ class AURA_API AAuraPlayerController : public APlayerController
 
 public:
 	AAuraPlayerController();
+
+	UFUNCTION(Client, Reliable)
+	void ShowDamageNumber(ACharacter* TargetCharacter, float DamageValue);
 
 	//~ Begin APlayerController Interface
 	virtual void PlayerTick(float DeltaTime) override;
@@ -87,4 +91,7 @@ private:
 	bool bIsAutoRunning = false;
 
 	bool bCombatActionActive = false;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Aura|Combat")
+	TSubclassOf<UDamageTextComponent> DamageTextComponentClass;
 };

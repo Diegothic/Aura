@@ -9,6 +9,8 @@
 #include "GameFramework/Character.h"
 #include "GameplayTags/AuraGameplayTags.h"
 #include "Interaction/CombatInterface.h"
+#include "Kismet/GameplayStatics.h"
+#include "Player/AuraPlayerController.h"
 
 
 UAuraAttributeSet::UAuraAttributeSet()
@@ -192,6 +194,16 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 					FAuraGameplayTags::Get().GameplayEffect_HitReact
 				};
 				EffectProps.TargetASC->TryActivateAbilitiesByTag(HitEffectAbilityTags);
+			}
+
+			if (EffectProps.InstigatorCharacter != EffectProps.TargetCharacter)
+			{
+				AAuraPlayerController* const AuraPC = Cast<AAuraPlayerController>(
+					UGameplayStatics::GetPlayerController(EffectProps.InstigatorCharacter, 0));
+				if (IsValid(AuraPC))
+				{
+					AuraPC->ShowDamageNumber(EffectProps.TargetCharacter, LocalIncomingDamage);
+				}
 			}
 		}
 	}

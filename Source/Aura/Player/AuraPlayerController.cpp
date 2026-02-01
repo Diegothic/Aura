@@ -12,7 +12,9 @@
 #include "NavigationSystem.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "Components/SplineComponent.h"
+#include "GameFramework/Character.h"
 #include "GameplayTags/AuraGameplayTags.h"
+#include "UI/Widget/DamageTextComponent.h"
 
 
 AAuraPlayerController::AAuraPlayerController()
@@ -20,6 +22,21 @@ AAuraPlayerController::AAuraPlayerController()
 	bReplicates = true;
 
 	SplineComponent = CreateDefaultSubobject<USplineComponent>(TEXT("SplineComponent"));
+}
+
+void AAuraPlayerController::ShowDamageNumber_Implementation(ACharacter* TargetCharacter, float DamageValue)
+{
+	if (!IsValid(TargetCharacter) || DamageTextComponentClass == nullptr)
+	{
+		return;
+	}
+
+	UDamageTextComponent* const NewDamageTextComp = NewObject<UDamageTextComponent>(TargetCharacter, DamageTextComponentClass);
+	NewDamageTextComp->RegisterComponent();
+	NewDamageTextComp->AttachToComponent(TargetCharacter->GetRootComponent(),
+	                                     FAttachmentTransformRules::KeepRelativeTransform);
+	NewDamageTextComp->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+	NewDamageTextComp->SetDamageText(DamageValue);
 }
 
 void AAuraPlayerController::PlayerTick(float DeltaTime)
