@@ -48,14 +48,13 @@ void UAuraAbilitySystemStatics::InitDefaultAttributesForClass(
 	UAbilitySystemComponent* DestASC
 )
 {
-	if (const AAuraGameModeBase* const AuraGM = Cast<AAuraGameModeBase>(
-		UGameplayStatics::GetGameMode(WorldContextObject)
-	))
+	if (const UCharacterClassInfo* const CharacterClassInfo = GetCharacterClassInfo(WorldContextObject);
+		IsValid(CharacterClassInfo)
+	)
 	{
 		const AActor* const AvatarActor = DestASC->GetAvatarActor();
 
-		const UCharacterClassInfo& CharacterClassInfo = AuraGM->GetCharacterClassInfo();
-		const FCharacterClassDefaultInfo& ClassDefaultInfo = CharacterClassInfo.GetCharacterClassDefaultInfo(
+		const FCharacterClassDefaultInfo& ClassDefaultInfo = CharacterClassInfo->GetCharacterClassDefaultInfo(
 			CharacterClass
 		);
 
@@ -70,14 +69,14 @@ void UAuraAbilitySystemStatics::InitDefaultAttributesForClass(
 		DestASC->ApplyGameplayEffectSpecToSelf(*PrimaryAttributesSpecHandle.Data);
 
 		const FGameplayEffectSpecHandle SecondaryAttributesSpecHandle = DestASC->MakeOutgoingSpec(
-			CharacterClassInfo.GetSecondaryAttributesGameplayEffect(),
+			CharacterClassInfo->GetSecondaryAttributesGameplayEffect(),
 			CharacterLevel,
 			EffectContext
 		);
 		DestASC->ApplyGameplayEffectSpecToSelf(*SecondaryAttributesSpecHandle.Data);
 
 		const FGameplayEffectSpecHandle VitalAttributesSpecHandle = DestASC->MakeOutgoingSpec(
-			CharacterClassInfo.GetVitalAttributesGameplayEffect(),
+			CharacterClassInfo->GetVitalAttributesGameplayEffect(),
 			CharacterLevel,
 			EffectContext
 		);
@@ -92,17 +91,28 @@ void UAuraAbilitySystemStatics::GiveStartupAbilities(
 {
 	check(DestASC);
 
-	if (const AAuraGameModeBase* const AuraGM = Cast<AAuraGameModeBase>(
-		UGameplayStatics::GetGameMode(WorldContextObject)
-	))
+	if (const UCharacterClassInfo* const CharacterClassInfo = GetCharacterClassInfo(WorldContextObject);
+		IsValid(CharacterClassInfo)
+	)
 	{
-		const UCharacterClassInfo& CharacterClassInfo = AuraGM->GetCharacterClassInfo();
-		for (const TSubclassOf<UGameplayAbility>& AbilityClass : CharacterClassInfo.GetCommonAbilities())
+		for (const TSubclassOf<UGameplayAbility>& AbilityClass : CharacterClassInfo->GetCommonAbilities())
 		{
 			const FGameplayAbilitySpec AbilitySpec{AbilityClass, 1};
 			DestASC->GiveAbility(AbilitySpec);
 		}
 	}
+}
+
+const UCharacterClassInfo* UAuraAbilitySystemStatics::GetCharacterClassInfo(const UObject* InWorldContextObject)
+{
+	if (const AAuraGameModeBase* const AuraGM = Cast<AAuraGameModeBase>(
+		UGameplayStatics::GetGameMode(InWorldContextObject)
+	))
+	{
+		return &AuraGM->GetCharacterClassInfo();
+	}
+
+	return nullptr;
 }
 
 bool UAuraAbilitySystemStatics::CreateWidgetControllerParams(

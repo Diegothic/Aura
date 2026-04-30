@@ -29,13 +29,14 @@ private:
 	);
 
 	static float ApplyBlockChance(
-		float InCurrentDamage, 
+		float InCurrentDamage,
 		const FGameplayEffectCustomExecutionParameters& InExecParams,
 		const FAggregatorEvaluateParameters& InEvalParams
 	);
 
 	static float ApplyArmor(
-		float InCurrentDamage, 
+		const UObject* InWorldContextObject,
+		float InCurrentDamage,
 		const FGameplayEffectCustomExecutionParameters& InExecParams,
 		const FAggregatorEvaluateParameters& InEvalParams
 	);

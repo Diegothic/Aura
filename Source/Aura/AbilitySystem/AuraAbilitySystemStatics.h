@@ -40,6 +40,9 @@ public:
 		UAbilitySystemComponent* DestASC
 	);
 
+	UFUNCTION(BlueprintPure, Category = "Aura|AbilitySystem|CharacterClassDefaults")
+	static const UCharacterClassInfo* GetCharacterClassInfo(const UObject* InWorldContextObject);
+
 private:
 	static bool CreateWidgetControllerParams(const UObject* WorldContextObject, FWidgetControllerParams& OutParams);
 };

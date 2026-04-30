@@ -4,8 +4,11 @@
 #include "AuraExecutionCalculation_Damage.h"
 
 #include "AbilitySystemComponent.h"
+#include "AbilitySystem/AuraAbilitySystemStatics.h"
 #include "AbilitySystem/AuraAttributeSet.h"
+#include "AbilitySystem/Data/CharacterClassInfo.h"
 #include "GameplayTags/AuraGameplayTags.h"
+#include "Interaction/CombatInterface.h"
 
 struct FAuraDamageStatics
 {
@@ -64,9 +67,6 @@ void UAuraExecutionCalculation_Damage::Execute_Implementation(
 	const UAbilitySystemComponent* const SourceASC = ExecutionParams.GetSourceAbilitySystemComponent();
 	const UAbilitySystemComponent* const TargetASC = ExecutionParams.GetTargetAbilitySystemComponent();
 
-	const AActor* const SourceAvatar = IsValid(SourceASC) ? SourceASC->GetAvatarActor() : nullptr;
-	const AActor* const TargetAvatar = IsValid(TargetASC) ? TargetASC->GetAvatarActor() : nullptr;
-
 	const FGameplayEffectSpec& Spec = ExecutionParams.GetOwningSpec();
 
 	const FGameplayTagContainer* const SourceTags = Spec.CapturedSourceTags.GetAggregatedTags();
@@ -79,7 +79,7 @@ void UAuraExecutionCalculation_Damage::Execute_Implementation(
 	float FinalDamage = Spec.GetSetByCallerMagnitude(FAuraGameplayTags::Get().GameplayEffect_Damage);
 
 	FinalDamage = ApplyBlockChance(FinalDamage, ExecutionParams, EvalParams);
-	FinalDamage = ApplyArmor(FinalDamage, ExecutionParams, EvalParams);
+	FinalDamage = ApplyArmor(TargetASC, FinalDamage, ExecutionParams, EvalParams);
 
 	const FGameplayModifierEvaluatedData OutEvalData{
 		UAuraAttributeSet::GetIncomingDamageAttribute(),
@@ -144,11 +144,21 @@ float UAuraExecutionCalculation_Damage::ApplyBlockChance(
 }
 
 float UAuraExecutionCalculation_Damage::ApplyArmor(
+	const UObject* InWorldContextObject,
 	const float InCurrentDamage,
 	const FGameplayEffectCustomExecutionParameters& InExecParams,
 	const FAggregatorEvaluateParameters& InEvalParams
 )
 {
+	const UAbilitySystemComponent* const SourceASC = InExecParams.GetSourceAbilitySystemComponent();
+	const UAbilitySystemComponent* const TargetASC = InExecParams.GetTargetAbilitySystemComponent();
+
+	const AActor* const SourceAvatar = IsValid(SourceASC) ? SourceASC->GetAvatarActor() : nullptr;
+	const AActor* const TargetAvatar = IsValid(TargetASC) ? TargetASC->GetAvatarActor() : nullptr;
+
+	const ICombatInterface* const SourceCombatInterface = Cast<ICombatInterface>(SourceAvatar);
+	const ICombatInterface* const TargetCombatInterface = Cast<ICombatInterface>(TargetAvatar);
+
 	const float TargetArmorMagnitude = FindCapturedAttributeMagnitude(
 		InExecParams,
 		InEvalParams,
@@ -163,10 +173,37 @@ float UAuraExecutionCalculation_Damage::ApplyArmor(
 		0.0f
 	);
 
+	float SourceArmorPenetrationCoefficient = 0.25f;
+	float EffectiveArmorCoefficient = 0.3f;
+
+	if (const UCharacterClassInfo* const CharacterClassInfo
+			= UAuraAbilitySystemStatics::GetCharacterClassInfo(InWorldContextObject);
+		IsValid(CharacterClassInfo)
+	)
+	{
+		if (SourceCombatInterface != nullptr)
+		{
+			SourceArmorPenetrationCoefficient = CharacterClassInfo->EvaluateDamageCalculationCoefficient(
+				FName{"ArmorPenetration"},
+				SourceArmorPenetrationCoefficient,
+				SourceCombatInterface->GetCharacterLevel()
+			);
+		}
+
+		if (TargetCombatInterface != nullptr)
+		{
+			EffectiveArmorCoefficient = CharacterClassInfo->EvaluateDamageCalculationCoefficient(
+				FName{"EffectiveArmor"},
+				EffectiveArmorCoefficient,
+				TargetCombatInterface->GetCharacterLevel()
+			);
+		}
+	}
+
 	const float EffectiveArmor = FMath::Max(
-		TargetArmorMagnitude * (100.0f - SourceArmorPenetrationMagnitude) / 100.0f,
+		TargetArmorMagnitude * (100.0f - SourceArmorPenetrationMagnitude * SourceArmorPenetrationCoefficient) / 100.0f,
 		0.0f
 	);
 
-	return InCurrentDamage * FMath::Max((100.0f - EffectiveArmor) / 100.0f, 1.0f);
+	return InCurrentDamage * FMath::Max((100.0f - EffectiveArmor * EffectiveArmorCoefficient) / 100.0f, 1.0f);
 }
