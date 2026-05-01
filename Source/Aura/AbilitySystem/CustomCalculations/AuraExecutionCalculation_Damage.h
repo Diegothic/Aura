@@ -14,10 +14,12 @@ class AURA_API UAuraExecutionCalculation_Damage : public UGameplayEffectExecutio
 public:
 	UAuraExecutionCalculation_Damage();
 
+	//~ Begin UGameplayEffectExecutionCalculation
 	virtual void Execute_Implementation(
 		const FGameplayEffectCustomExecutionParameters& ExecutionParams,
 		FGameplayEffectCustomExecutionOutput& OutExecutionOutput
 	) const override;
+	//~ End UGameplayEffectExecutionCalculation
 
 private:
 	static float FindCapturedAttributeMagnitude(
@@ -35,6 +37,13 @@ private:
 	);
 
 	static float ApplyArmor(
+		const UObject* InWorldContextObject,
+		float InCurrentDamage,
+		const FGameplayEffectCustomExecutionParameters& InExecParams,
+		const FAggregatorEvaluateParameters& InEvalParams
+	);
+
+	static float ApplyCriticalHit(
 		const UObject* InWorldContextObject,
 		float InCurrentDamage,
 		const FGameplayEffectCustomExecutionParameters& InExecParams,
