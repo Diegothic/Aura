@@ -101,4 +101,14 @@ void FAuraGameplayTags::Init()
 		FName("Event.Montage.FireBolt"),
 		FString("Fire Bolt Montage Event")
 	);
+
+	// Gameplay Effect Tags
+	Instance.GameplayEffect_Damage = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("GameplayEffect.Damage"),
+		FString("Gameplay Effect Damage Magnitude")
+	);
+	Instance.GameplayEffect_HitReact = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("GameplayEffect.HitReact"),
+		FString("Actor owning this Tag is reacting to a Hit")
+	);
 }

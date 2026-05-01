@@ -3,8 +3,10 @@
 
 #include "AuraProjectileSpell.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "Actor/AuraProjectile.h"
+#include "GameplayTags/AuraGameplayTags.h"
 #include "Interaction/CombatInterface.h"
 #include "Kismet/KismetMathLibrary.h"
 
@@ -45,9 +47,12 @@ void UAuraProjectileSpell::SpawnProjectile(const FVector& TargetLocation)
 			Cast<APawn>(OwningActor),
 			ESpawnActorCollisionHandlingMethod::AlwaysSpawn
 		);
+		if (!IsValid(SpawnedProjectile))
+		{
+			return;
+		}
 
-		const UAbilitySystemComponent* const ASC = GetAbilitySystemComponentFromActorInfo();
-		if (IsValid(ASC))
+		if (const UAbilitySystemComponent* const ASC = GetAbilitySystemComponentFromActorInfo(); IsValid(ASC))
 		{
 			const FGameplayEffectContextHandle EffectContext = ASC->MakeEffectContext();
 			const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(
@@ -56,9 +61,17 @@ void UAuraProjectileSpell::SpawnProjectile(const FVector& TargetLocation)
 				EffectContext
 			);
 
+			const int32 AbilityLevel = GetAbilityLevel();
+			const float ScaledAbilityDamage = GetDamage().GetValueAtLevel(AbilityLevel);
+
+			UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
+				EffectSpecHandle,
+				FAuraGameplayTags::Get().GameplayEffect_Damage,
+				ScaledAbilityDamage
+			);
+
 			SpawnedProjectile->SetDamageEffectSpecHandle(EffectSpecHandle);
 		}
-
 
 		SpawnedProjectile->FinishSpawning(SpawnTransform);
 	}

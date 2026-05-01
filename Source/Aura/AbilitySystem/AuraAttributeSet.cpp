@@ -8,6 +8,9 @@
 #include "GameplayEffectExtension.h"
 #include "GameFramework/Character.h"
 #include "GameplayTags/AuraGameplayTags.h"
+#include "Interaction/CombatInterface.h"
+#include "Kismet/GameplayStatics.h"
+#include "Player/AuraPlayerController.h"
 
 
 UAuraAttributeSet::UAuraAttributeSet()
@@ -162,6 +165,47 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 	if (ChangedAttribute == GetMaxManaAttribute())
 	{
 		SetMaxMana(FMath::Max(GetMaxMana(), 0.0f));
+	}
+
+	if (ChangedAttribute == GetIncomingDamageAttribute())
+	{
+		const float LocalIncomingDamage = GetIncomingDamage();
+		SetIncomingDamage(0.0f);
+
+		// Ignore negative values of Incoming Damage
+		if (LocalIncomingDamage > 0.0f)
+		{
+			float NewHealth = GetHealth() - LocalIncomingDamage;
+			NewHealth = FMath::Clamp(NewHealth, 0.0f, GetMaxHealth());
+			SetHealth(NewHealth);
+
+			const bool bFatal = NewHealth <= 0.0f;
+			if (bFatal)
+			{
+				if (ICombatInterface* const CombatInterface = Cast<ICombatInterface>(EffectProps.TargetAvatarActor);
+					CombatInterface != nullptr)
+				{
+					CombatInterface->Die();
+				}
+			}
+			else
+			{
+				const FGameplayTagContainer HitEffectAbilityTags{
+					FAuraGameplayTags::Get().GameplayEffect_HitReact
+				};
+				EffectProps.TargetASC->TryActivateAbilitiesByTag(HitEffectAbilityTags);
+			}
+
+			if (EffectProps.InstigatorCharacter != EffectProps.TargetCharacter)
+			{
+				AAuraPlayerController* const AuraPC = Cast<AAuraPlayerController>(
+					UGameplayStatics::GetPlayerController(EffectProps.InstigatorCharacter, 0));
+				if (IsValid(AuraPC))
+				{
+					AuraPC->ShowDamageNumber(EffectProps.TargetCharacter, LocalIncomingDamage);
+				}
+			}
+		}
 	}
 }
 

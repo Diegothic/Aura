@@ -13,6 +13,7 @@ class UAbilitySystemComponent;
 class UAttributeSet;
 class UGameplayEffect;
 class UGameplayAbility;
+class UAnimMontage;
 
 UCLASS(Abstract)
 class AURA_API AAuraCharacterBase : public ACharacter, public IAbilitySystemInterface, public ICombatInterface
@@ -36,6 +37,8 @@ public:
 
 	//~ Begin ICombatInterface Interface
 	virtual FVector GetCombatSocketLocation() const override;
+	virtual UAnimMontage* GetHitReactMontage_Implementation() const override;
+	virtual void Die() override;
 	//~ End ICombatInterface Interface
 
 protected:
@@ -47,12 +50,26 @@ protected:
 
 	void GiveStartupAbilities() const;
 
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_HandleDeath();
+
+	void Dissolve();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void BP_StartDissolveTimeline(const TArray<UMaterialInstanceDynamic*>& DynamicMaterialInstances);
+
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "Aura|AbilitySystem")
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
 
 	UPROPERTY()
 	TObjectPtr<UAttributeSet> AttributeSet;
+
+	UPROPERTY(EditAnywhere, Category = "Aura|Dissolve")
+	TObjectPtr<UMaterialInstance> DissolveMaterialInstance;
+
+	UPROPERTY(EditAnywhere, Category = "Aura|Dissolve")
+	TObjectPtr<UMaterialInstance> WeaponDissolveMaterialInstance;
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Aura|Attributes", Meta = (AllowPrivateAccess = "true"))
@@ -72,6 +89,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Aura|Combat", Meta = (AllowPrivateAccess = "true"))
 	FName WeaponSpellSocket;
+
+	UPROPERTY(EditAnywhere, Category = "Aura|Combat")
+	TObjectPtr<UAnimMontage> HitReactMontage;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Aura|Abilities", Meta = (AllowPrivateAccess = "true"))
 	TArray<TSubclassOf<UGameplayAbility>> StartupAbilities;

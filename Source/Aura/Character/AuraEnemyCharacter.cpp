@@ -7,6 +7,8 @@
 #include "AbilitySystem/AuraAbilitySystemStatics.h"
 #include "AbilitySystem/AuraAttributeSet.h"
 #include "Components/WidgetComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "GameplayTags/AuraGameplayTags.h"
 #include "UI/Widget/AuraUserWidget.h"
 
 
@@ -31,7 +33,8 @@ void AAuraEnemyCharacter::PostInitializeComponents()
 	Super::PostInitializeComponents();
 
 	InitAbilityActorInfo();
-	BindCallbacksToAttributeChanges();
+	UAuraAbilitySystemStatics::GiveStartupAbilities(this, AbilitySystemComponent);
+	BindToAbilitySystemEvents();
 }
 
 void AAuraEnemyCharacter::BeginPlay()
@@ -77,6 +80,12 @@ int32 AAuraEnemyCharacter::GetCharacterLevel() const
 	return Level;
 }
 
+void AAuraEnemyCharacter::Die()
+{
+	SetLifeSpan(DeathLifeSpan);
+	Super::Die();
+}
+
 void AAuraEnemyCharacter::InitAbilityActorInfo()
 {
 	Super::InitAbilityActorInfo();
@@ -100,7 +109,7 @@ void AAuraEnemyCharacter::InitDefaultAttributes() const
 	);
 }
 
-void AAuraEnemyCharacter::BindCallbacksToAttributeChanges() const
+void AAuraEnemyCharacter::BindToAbilitySystemEvents()
 {
 	if (!IsValid(AbilitySystemComponent))
 	{
@@ -123,6 +132,11 @@ void AAuraEnemyCharacter::BindCallbacksToAttributeChanges() const
 			}
 		);
 	}
+
+	AbilitySystemComponent->RegisterGameplayTagEvent(
+		FAuraGameplayTags::Get().GameplayEffect_HitReact,
+		EGameplayTagEventType::NewOrRemoved
+	).AddUObject(this, &ThisClass::OnHitReactTagChangedEvent);
 }
 
 void AAuraEnemyCharacter::BroadcastInitialAttributeValues() const
@@ -136,5 +150,19 @@ void AAuraEnemyCharacter::BroadcastInitialAttributeValues() const
 	{
 		OnHealthChanged.Broadcast(AuraAS->GetHealth());
 		OnMaxHealthChanged.Broadcast(AuraAS->GetMaxHealth());
+	}
+}
+
+void AAuraEnemyCharacter::OnHitReactTagChangedEvent(const FGameplayTag InChangedTag, int32 InNewTagCount)
+{
+	bReactingToHit = InNewTagCount > 0;
+
+	UCharacterMovementComponent* const MovementComp = GetCharacterMovement();
+	if (IsValid(MovementComp))
+	{
+		if (bReactingToHit)
+		{
+			MovementComp->StopMovementImmediately();
+		}
 	}
 }
