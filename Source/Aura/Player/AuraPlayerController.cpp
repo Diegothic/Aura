@@ -24,19 +24,27 @@ AAuraPlayerController::AAuraPlayerController()
 	SplineComponent = CreateDefaultSubobject<USplineComponent>(TEXT("SplineComponent"));
 }
 
-void AAuraPlayerController::ShowDamageNumber_Implementation(ACharacter* TargetCharacter, float DamageValue)
+void AAuraPlayerController::ShowDamageNumber_Implementation(
+	ACharacter* InTargetCharacter,
+	const float InDamageValue,
+	const bool bInIsBlockedHit,
+	const bool bInIsCriticalHit
+)
 {
-	if (!IsValid(TargetCharacter) || DamageTextComponentClass == nullptr)
+	if (!IsValid(InTargetCharacter) || DamageTextComponentClass == nullptr)
 	{
 		return;
 	}
 
-	UDamageTextComponent* const NewDamageTextComp = NewObject<UDamageTextComponent>(TargetCharacter, DamageTextComponentClass);
+	UDamageTextComponent* const NewDamageTextComp = NewObject<UDamageTextComponent>(
+		InTargetCharacter, DamageTextComponentClass);
 	NewDamageTextComp->RegisterComponent();
-	NewDamageTextComp->AttachToComponent(TargetCharacter->GetRootComponent(),
-	                                     FAttachmentTransformRules::KeepRelativeTransform);
+	NewDamageTextComp->AttachToComponent(
+		InTargetCharacter->GetRootComponent(),
+		FAttachmentTransformRules::KeepRelativeTransform
+	);
 	NewDamageTextComp->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
-	NewDamageTextComp->SetDamageText(DamageValue);
+	NewDamageTextComp->SetDamageText(InDamageValue, bInIsBlockedHit, bInIsCriticalHit);
 }
 
 void AAuraPlayerController::PlayerTick(float DeltaTime)

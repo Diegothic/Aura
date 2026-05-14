@@ -5,6 +5,7 @@
 
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/AuraAbilitySystemStatics.h"
+#include "AbilitySystem/AuraAbilitySystemTypes.h"
 #include "AbilitySystem/AuraAttributeSet.h"
 #include "AbilitySystem/Data/CharacterClassInfo.h"
 #include "GameplayTags/AuraGameplayTags.h"
@@ -129,6 +130,11 @@ float UAuraExecutionCalculation_Damage::ApplyBlockChance(
 
 	const bool bBlocked = BlockChanceMagnitude != 0.0f
 		&& FMath::RandRange(0.0f, 100.0f) <= BlockChanceMagnitude;
+
+	const FGameplayEffectSpec& EffectSpec = InExecParams.GetOwningSpec();
+	FGameplayEffectContextHandle EffectContext = EffectSpec.GetContext();
+	UAuraAbilitySystemStatics::SetIsBlockedHit(EffectContext, bBlocked);
+
 	if (bBlocked)
 	{
 		return InCurrentDamage * 0.5f;
@@ -262,6 +268,11 @@ float UAuraExecutionCalculation_Damage::ApplyCriticalHit(
 
 	const bool bCriticalHit = EffectiveCriticalHitChance != 0.0f
 		&& FMath::RandRange(0.0f, 100.0f) <= EffectiveCriticalHitChance;
+
+	const FGameplayEffectSpec& EffectSpec = InExecParams.GetOwningSpec();
+	FGameplayEffectContextHandle EffectContext = EffectSpec.GetContext();
+	UAuraAbilitySystemStatics::SetIsCriticalHit(EffectContext, bCriticalHit);
+
 	if (bCriticalHit)
 	{
 		return InCurrentDamage * 2.0f + SourceCriticalHitDamageMagnitude;

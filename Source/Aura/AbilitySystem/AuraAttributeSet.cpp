@@ -4,6 +4,7 @@
 #include "AuraAttributeSet.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
+#include "AuraAbilitySystemStatics.h"
 #include "Net/UnrealNetwork.h"
 #include "GameplayEffectExtension.h"
 #include "GameFramework/Character.h"
@@ -202,7 +203,17 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 					UGameplayStatics::GetPlayerController(EffectProps.InstigatorCharacter, 0));
 				if (IsValid(AuraPC))
 				{
-					AuraPC->ShowDamageNumber(EffectProps.TargetCharacter, LocalIncomingDamage);
+					const bool bIsBlockedHit
+						= UAuraAbilitySystemStatics::GetIsBlockedHit(EffectProps.EffectContextHandle);
+					const bool bIsCriticalHit
+						= UAuraAbilitySystemStatics::GetIsCriticalHit(EffectProps.EffectContextHandle);
+
+					AuraPC->ShowDamageNumber(
+						EffectProps.TargetCharacter,
+						LocalIncomingDamage,
+						bIsBlockedHit,
+						bIsCriticalHit
+					);
 				}
 			}
 		}
