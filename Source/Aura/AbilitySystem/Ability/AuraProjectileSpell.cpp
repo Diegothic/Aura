@@ -64,22 +64,12 @@ void UAuraProjectileSpell::SpawnProjectile(const FVector& TargetLocation)
 			HitResult.Location = TargetLocation;
 			EffectContext.AddHitResult(HitResult);
 
-			const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(
-				DamageGameplayEffect,
-				GetAbilityLevel(),
-				EffectContext
-			);
-
-			const int32 AbilityLevel = GetAbilityLevel();
-			const float ScaledAbilityDamage = GetDamage().GetValueAtLevel(AbilityLevel);
-
-			UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
-				EffectSpecHandle,
-				FAuraGameplayTags::Get().GameplayEffect_Damage,
-				ScaledAbilityDamage
-			);
-
-			SpawnedProjectile->SetDamageEffectSpecHandle(EffectSpecHandle);
+			if (const TOptional<FGameplayEffectSpecHandle> EffectSpecHandleOpt = MakeDamageEffectSpec(EffectContext);
+				EffectSpecHandleOpt.IsSet()
+			)
+			{
+				SpawnedProjectile->SetDamageEffectSpecHandle(EffectSpecHandleOpt.GetValue());
+			}
 		}
 
 		SpawnedProjectile->FinishSpawning(SpawnTransform);

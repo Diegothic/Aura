@@ -7,8 +7,8 @@
 #include "AbilitySystem/AuraAbilitySystemStatics.h"
 #include "AbilitySystem/AuraAbilitySystemTypes.h"
 #include "AbilitySystem/AuraAttributeSet.h"
+#include "AbilitySystem/Ability/AuraDamageGameplayAbility.h"
 #include "AbilitySystem/Data/CharacterClassInfo.h"
-#include "GameplayTags/AuraGameplayTags.h"
 #include "Interaction/CombatInterface.h"
 
 #define DEFINE_AURA_ATTRIBUTE_CAPTUREDEF(S, P, T, B) \
@@ -69,7 +69,21 @@ void UAuraExecutionCalculation_Damage::Execute_Implementation(
 	EvalParams.SourceTags = SourceTags;
 	EvalParams.TargetTags = TargetTags;
 
-	float FinalDamage = Spec.GetSetByCallerMagnitude(FAuraGameplayTags::Get().GameplayEffect_Damage);
+	float FinalDamage = 0.0f;
+	const FGameplayEffectContextHandle& EffectContext = Spec.GetEffectContext();
+	if (const UAuraDamageGameplayAbility* const AuraDamageAbility
+			= Cast<UAuraDamageGameplayAbility>(EffectContext.GetAbility());
+		IsValid(AuraDamageAbility)
+	)
+	{
+		FGameplayTagContainer DamageTypeTags;
+		AuraDamageAbility->GatherDamageTypes(DamageTypeTags);
+
+		for (const FGameplayTag& DamageTypeTag : DamageTypeTags)
+		{
+			FinalDamage += Spec.GetSetByCallerMagnitude(DamageTypeTag, false, 0.0f);
+		}
+	}
 
 	FinalDamage = ApplyBlockChance(FinalDamage, ExecutionParams, EvalParams);
 	FinalDamage = ApplyArmor(TargetASC, FinalDamage, ExecutionParams, EvalParams);

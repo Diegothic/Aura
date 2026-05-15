@@ -47,6 +47,8 @@ public:
 
 	//~ Begin Gameplay Effect Tags
 	FGameplayTag GameplayEffect_Damage;
+	FGameplayTag GameplayEffect_Damage_Fire;
+
 	FGameplayTag GameplayEffect_HitReact;
 	//~ End Gameplay Effect Tags
 

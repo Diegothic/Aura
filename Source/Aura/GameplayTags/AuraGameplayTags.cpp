@@ -107,6 +107,11 @@ void FAuraGameplayTags::Init()
 		FName("GameplayEffect.Damage"),
 		FString("Gameplay Effect Damage Magnitude")
 	);
+	Instance.GameplayEffect_Damage_Fire = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("GameplayEffect.Damage.Fire"),
+		FString("Gameplay Effect Fire Damage Magnitude")
+	);
+
 	Instance.GameplayEffect_HitReact = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("GameplayEffect.HitReact"),
 		FString("Actor owning this Tag is reacting to a Hit")
