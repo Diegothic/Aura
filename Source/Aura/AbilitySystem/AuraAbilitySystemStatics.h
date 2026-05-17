@@ -8,6 +8,7 @@
 
 #include "AuraAbilitySystemStatics.generated.h"
 
+class UAuraAbilitySystemDamageConfig;
 struct FGameplayEffectContextHandle;
 class UAbilitySystemComponent;
 class UOverlayWidgetController;
@@ -45,6 +46,9 @@ public:
 	static const UCharacterClassInfo* GetCharacterClassInfo(const UObject* InWorldContextObject);
 
 public:
+	UFUNCTION(BlueprintPure, Category = "Aura|AbilitySystem|Damage")
+	static const UAuraAbilitySystemDamageConfig* GetDamageConfig(const UObject* InWorldContextObject);
+
 	UFUNCTION(BlueprintPure, Category = "Aura|AbilitySystem|GameplayEffect")
 	static bool GetIsBlockedHit(const FGameplayEffectContextHandle& InEffectContextHandle);
 

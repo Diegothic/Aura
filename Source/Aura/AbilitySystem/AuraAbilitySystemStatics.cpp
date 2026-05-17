@@ -115,6 +115,16 @@ const UCharacterClassInfo* UAuraAbilitySystemStatics::GetCharacterClassInfo(cons
 	return nullptr;
 }
 
+const UAuraAbilitySystemDamageConfig* UAuraAbilitySystemStatics::GetDamageConfig(const UObject* InWorldContextObject)
+{
+	if (const AAuraGameModeBase* const AuraGM = AAuraGameModeBase::Get(InWorldContextObject); IsValid(AuraGM))
+	{
+		return AuraGM->GetAbilitySystemDamageConfig();
+	}
+
+	return nullptr;
+}
+
 bool UAuraAbilitySystemStatics::GetIsBlockedHit(const FGameplayEffectContextHandle& InEffectContextHandle)
 {
 	const FAuraGameplayEffectContext* const AuraEffectContext
