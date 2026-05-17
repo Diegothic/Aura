@@ -25,7 +25,12 @@ public:
 	AAuraPlayerController();
 
 	UFUNCTION(Client, Reliable)
-	void ShowDamageNumber(ACharacter* TargetCharacter, float DamageValue);
+	void ShowDamageNumber(
+		ACharacter* InTargetCharacter,
+		float InDamageValue,
+		bool bInIsBlockedHit,
+		bool bInIsCriticalHit
+	);
 
 	//~ Begin APlayerController Interface
 	virtual void PlayerTick(float DeltaTime) override;

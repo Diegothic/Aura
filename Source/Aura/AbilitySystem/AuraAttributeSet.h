@@ -85,6 +85,11 @@ public:
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, CriticalHitResistance);
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, HealthRegeneration);
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, ManaRegeneration);
+
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, FireDamageResistance);
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, LightningDamageResistance);
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, ArcaneDamageResistance);
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, PhysicalDamageResistance);
 	//~ End Secondary Attribute Accessors
 
 	//~ Meta Attribute Accessors
@@ -148,6 +153,15 @@ protected:
 	void OnRep_HealthRegeneration(const FGameplayAttributeData& OldValue) const;
 	UFUNCTION()
 	void OnRep_ManaRegeneration(const FGameplayAttributeData& OldValue) const;
+
+	UFUNCTION()
+	void OnRep_FireDamageResistance(const FGameplayAttributeData& OldValue) const;
+	UFUNCTION()
+	void OnRep_LightningDamageResistance(const FGameplayAttributeData& OldValue) const;
+	UFUNCTION()
+	void OnRep_ArcaneDamageResistance(const FGameplayAttributeData& OldValue) const;
+	UFUNCTION()
+	void OnRep_PhysicalDamageResistance(const FGameplayAttributeData& OldValue) const;
 	//~ End OnRep Secondary Attributes
 
 private:
@@ -222,6 +236,30 @@ private:
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ManaRegeneration, Category = "Aura|Attributes|Secondary",
 		meta = (AllowPrivateAccess = "true"))
 	FGameplayAttributeData ManaRegeneration;
+
+	UPROPERTY(BlueprintReadOnly,
+		ReplicatedUsing = OnRep_FireDamageResistance,
+		Category = "Aura|Attributes|Secondary|Resistance",
+		meta = (AllowPrivateAccess = "true"))
+	FGameplayAttributeData FireDamageResistance;
+
+	UPROPERTY(BlueprintReadOnly,
+		ReplicatedUsing = OnRep_LightningDamageResistance,
+		Category = "Aura|Attributes|Secondary|Resistance",
+		meta = (AllowPrivateAccess = "true"))
+	FGameplayAttributeData LightningDamageResistance;
+
+	UPROPERTY(BlueprintReadOnly,
+		ReplicatedUsing = OnRep_ArcaneDamageResistance,
+		Category = "Aura|Attributes|Secondary|Resistance",
+		meta = (AllowPrivateAccess = "true"))
+	FGameplayAttributeData ArcaneDamageResistance;
+	
+	UPROPERTY(BlueprintReadOnly,
+		ReplicatedUsing = OnRep_PhysicalDamageResistance,
+		Category = "Aura|Attributes|Secondary|Resistance",
+		meta = (AllowPrivateAccess = "true"))
+	FGameplayAttributeData PhysicalDamageResistance;
 	//~ End Secondary Attributes
 
 	//~ Meta Attributes

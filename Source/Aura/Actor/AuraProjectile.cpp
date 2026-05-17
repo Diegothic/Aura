@@ -73,33 +73,34 @@ void AAuraProjectile::OnSphereOverlap(
 	const FHitResult& SweepResult
 )
 {
-	if (!IsValid(OtherActor))
+	if (bHit || !HasAuthority())
 	{
 		return;
 	}
 
-	if (!bHit)
+	if (DamageEffectSpecHandle.IsValid())
 	{
-		PlayOnHitEffects(SweepResult);
-		bHit = true;
-	}
-
-	if (HasAuthority())
-	{
-		MulticastOnHit(SweepResult);
-
-		if (DamageEffectSpecHandle.IsValid())
+		if (const FGameplayEffectContextHandle& DamageEffectContext
+				= DamageEffectSpecHandle.Data.Get()->GetEffectContext();
+			OtherActor == DamageEffectContext.GetEffectCauser())
 		{
-			if (UAbilitySystemComponent* const TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(
-				OtherActor
-			))
-			{
-				TargetASC->ApplyGameplayEffectSpecToSelf(*DamageEffectSpecHandle.Data);
-			}
+			return;
 		}
-
-		Destroy();
 	}
+
+	bHit = true;
+	PlayOnHitEffects(SweepResult);
+
+	MulticastOnHit(SweepResult);
+
+	if (UAbilitySystemComponent* const TargetASC
+		= UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor)
+	)
+	{
+		TargetASC->ApplyGameplayEffectSpecToSelf(*DamageEffectSpecHandle.Data);
+	}
+
+	Destroy();
 }
 
 void AAuraProjectile::PlayOnHitEffects(const FHitResult& HitResult) const
@@ -121,35 +122,39 @@ void AAuraProjectile::PlayOnHitEffects(const FHitResult& HitResult) const
 
 void AAuraProjectile::MulticastOnHit_Implementation(const FHitResult& HitResult)
 {
-	if (!bHit)
+	if (bHit)
 	{
-		PlayOnHitEffects(HitResult);
-		bHit = true;
+		return;
 	}
+
+	bHit = true;
+	PlayOnHitEffects(HitResult);
 }
 
 void AAuraProjectile::OnLifeEnded()
 {
-	if (!bHit)
+	if (bHit || !HasAuthority())
 	{
-		PlayOnLifeEndedEffects();
-		bHit = true;
+		return;
 	}
 
-	if (HasAuthority())
-	{
-		MulticastOnLifeEnded();
-		Destroy();
-	}
+	bHit = true;
+	PlayOnLifeEndedEffects();
+
+	MulticastOnLifeEnded();
+
+	Destroy();
 }
 
 void AAuraProjectile::MulticastOnLifeEnded_Implementation()
 {
-	if (!bHit)
+	if (bHit)
 	{
-		PlayOnLifeEndedEffects();
-		bHit = true;
+		return;
 	}
+
+	bHit = true;
+	PlayOnLifeEndedEffects();
 }
 
 void AAuraProjectile::PlayOnLifeEndedEffects() const

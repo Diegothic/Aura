@@ -33,7 +33,10 @@ void AAuraEnemyCharacter::PostInitializeComponents()
 	Super::PostInitializeComponents();
 
 	InitAbilityActorInfo();
-	UAuraAbilitySystemStatics::GiveStartupAbilities(this, AbilitySystemComponent);
+	if (HasAuthority())
+	{
+		UAuraAbilitySystemStatics::GiveStartupAbilities(this, AbilitySystemComponent);
+	}
 	BindToAbilitySystemEvents();
 }
 
@@ -94,9 +97,13 @@ void AAuraEnemyCharacter::InitAbilityActorInfo()
 	AbilitySystemComponent->InitAbilityActorInfo(this, this);
 
 	UAuraAbilitySystemComponent* const AuraASC = Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent);
+	check(AuraASC);
 	AuraASC->AbilityActorInfoSet();
 
-	InitDefaultAttributes();
+	if (HasAuthority())
+	{
+		InitDefaultAttributes();
+	}
 }
 
 void AAuraEnemyCharacter::InitDefaultAttributes() const

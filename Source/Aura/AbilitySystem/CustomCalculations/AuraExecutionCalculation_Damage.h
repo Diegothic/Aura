@@ -30,6 +30,19 @@ private:
 		TOptional<float> InOptMax = NullOpt
 	);
 
+	static float CalcBaseDamage(
+		const UObject* InWorldContextObject,
+		const FGameplayEffectCustomExecutionParameters& InExecParams,
+		const FAggregatorEvaluateParameters& InEvalParams
+	);
+
+	static float FindTargetResistanceForDamageType(
+		const UObject* InWorldContextObject,
+		const FGameplayTag& InDamageTypeTag,
+		const FGameplayEffectCustomExecutionParameters& InExecParams,
+		const FAggregatorEvaluateParameters& InEvalParams
+	);
+
 	static float ApplyBlockChance(
 		float InCurrentDamage,
 		const FGameplayEffectCustomExecutionParameters& InExecParams,
