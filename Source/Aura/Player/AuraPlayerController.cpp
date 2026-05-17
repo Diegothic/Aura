@@ -31,6 +31,11 @@ void AAuraPlayerController::ShowDamageNumber_Implementation(
 	const bool bInIsCriticalHit
 )
 {
+	if (!IsLocalController())
+	{
+		return;
+	}
+
 	if (!IsValid(InTargetCharacter) || DamageTextComponentClass == nullptr)
 	{
 		return;

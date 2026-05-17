@@ -221,9 +221,10 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 
 			if (EffectProps.InstigatorCharacter != EffectProps.TargetCharacter)
 			{
-				AAuraPlayerController* const AuraPC = Cast<AAuraPlayerController>(
-					UGameplayStatics::GetPlayerController(EffectProps.InstigatorCharacter, 0));
-				if (IsValid(AuraPC))
+				if (AAuraPlayerController* const AuraPC
+						= Cast<AAuraPlayerController>(EffectProps.InstigatorCharacter->GetController());
+					IsValid(AuraPC)
+				)
 				{
 					const bool bIsBlockedHit
 						= UAuraAbilitySystemStatics::GetIsBlockedHit(EffectProps.EffectContextHandle);
