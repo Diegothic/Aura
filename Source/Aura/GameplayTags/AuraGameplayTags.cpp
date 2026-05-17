@@ -70,6 +70,24 @@ void FAuraGameplayTags::Init()
 		FString("Amount of Mana regenerated every second")
 	);
 
+	// Resistance Attribute Tags
+	Instance.Attribute_Resistance_Fire = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Attribute.Resistance.Fire"),
+		FString("Fire Damage Resistance")
+	);
+	Instance.Attribute_Resistance_Lightning = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Attribute.Resistance.Lightning"),
+		FString("Lightning Damage Resistance")
+	);
+	Instance.Attribute_Resistance_Arcane = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Attribute.Resistance.Arcane"),
+		FString("Arcane Damage Resistance")
+	);
+	Instance.Attribute_Resistance_Physical = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Attribute.Resistance.Physical"),
+		FString("Physical Damage Resistance")
+	);
+
 	// Input Tags
 	Instance.Input_LMB = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Input.LMB"),
@@ -110,6 +128,18 @@ void FAuraGameplayTags::Init()
 	Instance.GameplayEffect_Damage_Fire = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("GameplayEffect.Damage.Fire"),
 		FString("Gameplay Effect Fire Damage Magnitude")
+	);
+	Instance.GameplayEffect_Damage_Lightning = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("GameplayEffect.Damage.Lightning"),
+		FString("Gameplay Effect Lightning Damage Magnitude")
+	);
+	Instance.GameplayEffect_Damage_Arcane = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("GameplayEffect.Damage.Arcane"),
+		FString("Gameplay Effect Arcane Damage Magnitude")
+	);
+	Instance.GameplayEffect_Damage_Physical = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("GameplayEffect.Damage.Physical"),
+		FString("Gameplay Effect Physical Damage Magnitude")
 	);
 
 	Instance.GameplayEffect_HitReact = UGameplayTagsManager::Get().AddNativeGameplayTag(

@@ -32,6 +32,13 @@ public:
 	FGameplayTag Attribute_Secondary_ManaRegeneration;
 	//~ End Secondary Attribute Tags
 
+	//~ Begin Resistance Attribute Tags
+	FGameplayTag Attribute_Resistance_Fire;
+	FGameplayTag Attribute_Resistance_Lightning;
+	FGameplayTag Attribute_Resistance_Arcane;
+	FGameplayTag Attribute_Resistance_Physical;
+	//~ End Resistance Attribute Tags
+
 	//~ Begin Input Tags
 	FGameplayTag Input_LMB;
 	FGameplayTag Input_RMB;
@@ -48,6 +55,9 @@ public:
 	//~ Begin Gameplay Effect Tags
 	FGameplayTag GameplayEffect_Damage;
 	FGameplayTag GameplayEffect_Damage_Fire;
+	FGameplayTag GameplayEffect_Damage_Lightning;
+	FGameplayTag GameplayEffect_Damage_Arcane;
+	FGameplayTag GameplayEffect_Damage_Physical;
 
 	FGameplayTag GameplayEffect_HitReact;
 	//~ End Gameplay Effect Tags

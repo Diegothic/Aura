@@ -107,11 +107,9 @@ void UAuraAbilitySystemStatics::GiveStartupAbilities(
 
 const UCharacterClassInfo* UAuraAbilitySystemStatics::GetCharacterClassInfo(const UObject* InWorldContextObject)
 {
-	if (const AAuraGameModeBase* const AuraGM = Cast<AAuraGameModeBase>(
-		UGameplayStatics::GetGameMode(InWorldContextObject)
-	))
+	if (const AAuraGameModeBase* const AuraGM = AAuraGameModeBase::Get(InWorldContextObject); IsValid(AuraGM))
 	{
-		return &AuraGM->GetCharacterClassInfo();
+		return AuraGM->GetCharacterClassInfo();
 	}
 
 	return nullptr;
