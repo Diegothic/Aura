@@ -10,6 +10,7 @@
 
 #include "AuraEnemyCharacter.generated.h"
 
+class UBehaviorTree;
 class UWidgetComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEnemyAttributeChangedSignature, float, NewValue);
@@ -26,6 +27,10 @@ public:
 	virtual void PostInitializeComponents() override;
 	virtual void BeginPlay() override;
 	//~ End AActor Interface
+
+	//~ Begin APawn Interface
+	virtual void PossessedBy(AController* InNewController) override;
+	//~ End APawn Interface
 
 	UPROPERTY(BlueprintAssignable, Category = "Aura|AbilitySystem|Attributes")
 	FOnEnemyAttributeChangedSignature OnHealthChanged;
@@ -75,4 +80,7 @@ private:
 	float DeathLifeSpan = 5.0f;
 
 	bool bReactingToHit = false;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Aura|AI")
+	TObjectPtr<UBehaviorTree> BehaviorTree;
 };

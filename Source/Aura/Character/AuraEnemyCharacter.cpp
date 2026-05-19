@@ -6,9 +6,13 @@
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "AbilitySystem/AuraAbilitySystemStatics.h"
 #include "AbilitySystem/AuraAttributeSet.h"
+#include "BehaviorTree/BehaviorTree.h"
+#include "BehaviorTree/BlackboardComponent.h"
+#include "BehaviorTree/BlackboardData.h"
 #include "Components/WidgetComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameplayTags/AuraGameplayTags.h"
+#include "Runtime/AIModule/Classes/AIController.h"
 #include "UI/Widget/AuraUserWidget.h"
 
 
@@ -50,6 +54,36 @@ void AAuraEnemyCharacter::BeginPlay()
 	}
 
 	BroadcastInitialAttributeValues();
+}
+
+void AAuraEnemyCharacter::PossessedBy(AController* InNewController)
+{
+	Super::PossessedBy(InNewController);
+
+	if (!HasAuthority())
+	{
+		return;
+	}
+
+	if (!IsValid(BehaviorTree))
+	{
+		return;
+	}
+
+	if (AAIController* const AIController = Cast<AAIController>(InNewController))
+	{
+		if (UBlackboardData* const BlackboardData = BehaviorTree->BlackboardAsset; IsValid(BlackboardData))
+		{
+			if (UBlackboardComponent* const BlackboardComp = AIController->GetBlackboardComponent();
+				IsValid(BlackboardComp)
+			)
+			{
+				BlackboardComp->InitializeBlackboard(*BlackboardData);
+			}
+		}
+
+		AIController->RunBehaviorTree(BehaviorTree);
+	}
 }
 
 void AAuraEnemyCharacter::HighlightActor()
