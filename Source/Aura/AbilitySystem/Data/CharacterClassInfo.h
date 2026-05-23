@@ -18,6 +18,11 @@ enum class ECharacterClass : uint8
 	Ranger,
 };
 
+namespace Aura::CharacterClass
+{
+	bool IsRangedAttacker(ECharacterClass InCharacterClass);
+}
+
 USTRUCT(BlueprintType)
 struct FCharacterClassDefaultInfo
 {

@@ -16,6 +16,12 @@
 #include "UI/Widget/AuraUserWidget.h"
 
 
+namespace AuraEnemyCharacterPrivate
+{
+	const FName HitReactingBlackboardKeyName = FName{"HitReacting"};
+	const FName RangedAttackerBlackboardKeyName = FName{"RangedAttacker"};
+} // namespace AuraEnemyCharacterPrivate
+
 AAuraEnemyCharacter::AAuraEnemyCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -72,17 +78,30 @@ void AAuraEnemyCharacter::PossessedBy(AController* InNewController)
 
 	if (AAIController* const AIController = Cast<AAIController>(InNewController))
 	{
+		UBlackboardComponent* const BlackboardComp = AIController->GetBlackboardComponent();
 		if (UBlackboardData* const BlackboardData = BehaviorTree->BlackboardAsset; IsValid(BlackboardData))
 		{
-			if (UBlackboardComponent* const BlackboardComp = AIController->GetBlackboardComponent();
-				IsValid(BlackboardComp)
-			)
+			if (IsValid(BlackboardComp))
 			{
 				BlackboardComp->InitializeBlackboard(*BlackboardData);
 			}
 		}
 
 		AIController->RunBehaviorTree(BehaviorTree);
+
+		if (IsValid(BlackboardComp))
+		{
+			BlackboardComp->SetValueAsBool(
+				AuraEnemyCharacterPrivate::HitReactingBlackboardKeyName,
+				false
+			);
+
+			const bool bIsRangedAttacker = Aura::CharacterClass::IsRangedAttacker(CharacterClass);
+			BlackboardComp->SetValueAsBool(
+				AuraEnemyCharacterPrivate::RangedAttackerBlackboardKeyName,
+				bIsRangedAttacker
+			);
+		}
 	}
 }
 
@@ -198,12 +217,22 @@ void AAuraEnemyCharacter::OnHitReactTagChangedEvent(const FGameplayTag InChanged
 {
 	bReactingToHit = InNewTagCount > 0;
 
-	UCharacterMovementComponent* const MovementComp = GetCharacterMovement();
-	if (IsValid(MovementComp))
+	if (UCharacterMovementComponent* const MovementComp = GetCharacterMovement(); IsValid(MovementComp))
 	{
 		if (bReactingToHit)
 		{
 			MovementComp->StopMovementImmediately();
+		}
+
+		MovementComp->SetMovementMode(bReactingToHit ? MOVE_Custom : MOVE_Walking);
+	}
+
+	if (AAIController* const AIController = Cast<AAIController>(GetController()))
+	{
+		if (UBlackboardComponent* const BlackboardComp = AIController->GetBlackboardComponent();
+			IsValid(BlackboardComp))
+		{
+			BlackboardComp->SetValueAsBool(AuraEnemyCharacterPrivate::HitReactingBlackboardKeyName, bReactingToHit);
 		}
 	}
 }

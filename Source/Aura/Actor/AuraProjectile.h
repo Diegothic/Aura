@@ -47,10 +47,10 @@ private:
 		const FHitResult& SweepResult
 	);
 
-	void PlayOnHitEffects(const FHitResult& HitResult) const;
+	void PlayOnHitEffects(const FVector& InLocation_WS) const;
 
 	UFUNCTION(NetMulticast, Reliable)
-	void MulticastOnHit(const FHitResult& HitResult);
+	void MulticastOnHit(const FVector& InLocation_WS);
 
 	void OnLifeEnded();
 

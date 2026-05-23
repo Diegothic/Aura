@@ -88,10 +88,12 @@ void AAuraProjectile::OnSphereOverlap(
 		}
 	}
 
-	bHit = true;
-	PlayOnHitEffects(SweepResult);
+	const FVector HitLocation_WS = bFromSweep ? static_cast<FVector>(SweepResult.ImpactPoint) : GetActorLocation();
 
-	MulticastOnHit(SweepResult);
+	bHit = true;
+	PlayOnHitEffects(HitLocation_WS);
+
+	MulticastOnHit(HitLocation_WS);
 
 	if (UAbilitySystemComponent* const TargetASC
 		= UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor)
@@ -103,11 +105,11 @@ void AAuraProjectile::OnSphereOverlap(
 	Destroy();
 }
 
-void AAuraProjectile::PlayOnHitEffects(const FHitResult& HitResult) const
+void AAuraProjectile::PlayOnHitEffects(const FVector& InLocation_WS) const
 {
 	if (IsValid(ImpactSound))
 	{
-		UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, HitResult.ImpactPoint);
+		UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, InLocation_WS);
 	}
 
 	if (IsValid(ImpactEffect))
@@ -115,12 +117,12 @@ void AAuraProjectile::PlayOnHitEffects(const FHitResult& HitResult) const
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(
 			this,
 			ImpactEffect,
-			HitResult.ImpactPoint
+			InLocation_WS
 		);
 	}
 }
 
-void AAuraProjectile::MulticastOnHit_Implementation(const FHitResult& HitResult)
+void AAuraProjectile::MulticastOnHit_Implementation(const FVector& InLocation_WS)
 {
 	if (bHit)
 	{
@@ -128,7 +130,7 @@ void AAuraProjectile::MulticastOnHit_Implementation(const FHitResult& HitResult)
 	}
 
 	bHit = true;
-	PlayOnHitEffects(HitResult);
+	PlayOnHitEffects(InLocation_WS);
 }
 
 void AAuraProjectile::OnLifeEnded()

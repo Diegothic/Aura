@@ -41,6 +41,17 @@ bool AAuraEffectActor::ApplyEffectToTarget(
 	FActiveGameplayEffectHandle& OutEffectHandle
 ) const
 {
+	if (!IsValid(InTargetActor))
+	{
+		return false;
+	}
+
+	const bool bIsEnemy = InTargetActor->ActorHasTag(FName{"Enemy"});
+	if (bIsEnemy && !bApplyToEnemies)
+	{
+		return false;
+	}
+
 	if (UAbilitySystemComponent* const TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(
 		InTargetActor))
 	{
@@ -61,6 +72,17 @@ bool AAuraEffectActor::ApplyEffectToTarget(
 
 bool AAuraEffectActor::OnOverlap(AActor* const TargetActor)
 {
+	if (!IsValid(TargetActor))
+	{
+		return false;
+	}
+
+	const bool bIsEnemy = TargetActor->ActorHasTag(FName{"Enemy"});
+	if (bIsEnemy && !bApplyToEnemies)
+	{
+		return false;
+	}
+	
 	bool bAnyEffectApplied = false;
 
 	for (auto& Effect : InstantEffects)
@@ -107,6 +129,17 @@ bool AAuraEffectActor::OnOverlap(AActor* const TargetActor)
 
 bool AAuraEffectActor::OnEndOverlap(AActor* const TargetActor)
 {
+	if (!IsValid(TargetActor))
+	{
+		return false;
+	}
+
+	const bool bIsEnemy = TargetActor->ActorHasTag(FName{"Enemy"});
+	if (bIsEnemy && !bApplyToEnemies)
+	{
+		return false;
+	}
+	
 	bool bAnyEffectApplied = false;
 	bool bAnyEffectRemoved = false;
 
@@ -154,11 +187,6 @@ bool AAuraEffectActor::OnEndOverlap(AActor* const TargetActor)
 	}
 
 	if (bDestroyActorOnEffectApplication && bAnyEffectApplied)
-	{
-		Destroy();
-	}
-
-	if (bDestroyActorOnEffectRemoval && bAnyEffectRemoved)
 	{
 		Destroy();
 	}
