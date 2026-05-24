@@ -78,18 +78,10 @@ void AAuraEnemyCharacter::PossessedBy(AController* InNewController)
 
 	if (AAIController* const AIController = Cast<AAIController>(InNewController))
 	{
-		UBlackboardComponent* const BlackboardComp = AIController->GetBlackboardComponent();
-		if (UBlackboardData* const BlackboardData = BehaviorTree->BlackboardAsset; IsValid(BlackboardData))
-		{
-			if (IsValid(BlackboardComp))
-			{
-				BlackboardComp->InitializeBlackboard(*BlackboardData);
-			}
-		}
-
 		AIController->RunBehaviorTree(BehaviorTree);
 
-		if (IsValid(BlackboardComp))
+		if (UBlackboardComponent* const BlackboardComp = AIController->GetBlackboardComponent();
+			IsValid(BlackboardComp))
 		{
 			BlackboardComp->SetValueAsBool(
 				AuraEnemyCharacterPrivate::HitReactingBlackboardKeyName,
