@@ -46,7 +46,7 @@ UAbilitySystemComponent* AAuraCharacterBase::GetAbilitySystemComponent() const
 	return AbilitySystemComponent;
 }
 
-FVector AAuraCharacterBase::GetCombatSocketLocation() const
+FVector AAuraCharacterBase::GetCombatSocketLocation_Implementation() const
 {
 	if (!Weapon || !Weapon->DoesSocketExist(WeaponSpellSocket))
 	{
@@ -73,6 +73,16 @@ void AAuraCharacterBase::Die()
 	}
 
 	Multicast_HandleDeath();
+}
+
+bool AAuraCharacterBase::IsDead_Implementation() const
+{
+	return bDead;
+}
+
+AActor* AAuraCharacterBase::GetAvatarActor_Implementation()
+{
+	return this;
 }
 
 void AAuraCharacterBase::InitAbilityActorInfo()
@@ -153,6 +163,8 @@ void AAuraCharacterBase::Multicast_HandleDeath_Implementation()
 	}
 
 	Dissolve();
+
+	bDead = true;
 }
 
 void AAuraCharacterBase::ApplyEffectToSelf(const TSubclassOf<UGameplayEffect>& EffectClass, float Level) const

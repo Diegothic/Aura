@@ -21,7 +21,9 @@ class AURA_API ICombatInterface
 public:
 	virtual int32 GetCharacterLevel() const;
 
-	virtual FVector GetCombatSocketLocation() const;
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Aura|Combat")
+	FVector GetCombatSocketLocation() const;
+	virtual FVector GetCombatSocketLocation_Implementation() const;
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Aura|Combat")
 	void SetFacingTagetLocation(const FVector& TargetLocation);
@@ -30,6 +32,14 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Aura|Combat")
 	UAnimMontage* GetHitReactMontage() const;
 	virtual UAnimMontage* GetHitReactMontage_Implementation() const;
-	
+
 	virtual void Die();
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Aura|Combat")
+	bool IsDead() const;
+	virtual bool IsDead_Implementation() const;
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Aura|Combat")
+	AActor* GetAvatarActor();
+	virtual AActor* GetAvatarActor_Implementation();
 };

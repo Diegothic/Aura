@@ -119,6 +119,10 @@ void FAuraGameplayTags::Init()
 		FName("Event.Montage.FireBolt"),
 		FString("Fire Bolt Montage Event")
 	);
+	Instance.Event_Montage_Attack_Melee = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Event.Montage.Attack.Melee"),
+		FString("Melee Attack Montage Event")
+	);
 
 	// Gameplay Effect Tags
 	Instance.GameplayEffect_Damage = UGameplayTagsManager::Get().AddNativeGameplayTag(
@@ -145,5 +149,11 @@ void FAuraGameplayTags::Init()
 	Instance.GameplayEffect_HitReact = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("GameplayEffect.HitReact"),
 		FString("Actor owning this Tag is reacting to a Hit")
+	);
+
+	// Ability Tags
+	Instance.Ability_Attack = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Ability.Attack"),
+		FString("Attack Ability")
 	);
 }

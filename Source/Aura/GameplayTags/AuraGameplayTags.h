@@ -50,6 +50,7 @@ public:
 
 	//~ Begin Event Tags
 	FGameplayTag Event_Montage_FireBolt;
+	FGameplayTag Event_Montage_Attack_Melee;
 	//~ End Event Tags
 
 	//~ Begin Gameplay Effect Tags
@@ -61,6 +62,10 @@ public:
 
 	FGameplayTag GameplayEffect_HitReact;
 	//~ End Gameplay Effect Tags
+
+	// ~ Begin Ability Tags
+	FGameplayTag Ability_Attack;
+	// ~ End Ability Tags
 
 private:
 	static AURA_API FAuraGameplayTags Instance;

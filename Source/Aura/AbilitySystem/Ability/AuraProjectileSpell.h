@@ -12,12 +12,14 @@ class AURA_API UAuraProjectileSpell : public UAuraDamageGameplayAbility
 	GENERATED_BODY()
 
 protected:
+	// ~ Begin UGameplayAbility
 	virtual void ActivateAbility(
 		const FGameplayAbilitySpecHandle Handle,
 		const FGameplayAbilityActorInfo* ActorInfo,
 		const FGameplayAbilityActivationInfo ActivationInfo,
 		const FGameplayEventData* TriggerEventData
 	) override;
+	// ~ End UGameplayAbility
 
 	UFUNCTION(BlueprintCallable, Category = "Aura|Spell")
 	void SpawnProjectile(const FVector& TargetLocation);

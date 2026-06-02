@@ -30,6 +30,9 @@ struct FCharacterClassDefaultInfo
 
 	UPROPERTY(EditDefaultsOnly, Category = "Aura|ClassDefaults")
 	TSubclassOf<UGameplayEffect> PrimaryAttributesGameplayEffect;
+
+	UPROPERTY(EditDefaultsOnly, Category="Aura|ClassDefaults")
+	TArray<TSubclassOf<UGameplayAbility>> StartupAbilities;
 };
 
 UCLASS()
@@ -60,7 +63,8 @@ public:
 		return DamageCalculationCoefficientsTable;
 	}
 
-	float EvaluateDamageCalculationCoefficient(const FName& InCoefficientName, float InDefaultValue, int32 InCharacterLevel) const;
+	float EvaluateDamageCalculationCoefficient(const FName& InCoefficientName, float InDefaultValue,
+	                                           int32 InCharacterLevel) const;
 
 private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Aura|CommonClassDefaults",

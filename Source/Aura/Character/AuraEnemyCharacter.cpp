@@ -8,7 +8,6 @@
 #include "AbilitySystem/AuraAttributeSet.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "BehaviorTree/BlackboardData.h"
 #include "Components/WidgetComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameplayTags/AuraGameplayTags.h"
@@ -45,7 +44,11 @@ void AAuraEnemyCharacter::PostInitializeComponents()
 	InitAbilityActorInfo();
 	if (HasAuthority())
 	{
-		UAuraAbilitySystemStatics::GiveStartupAbilities(this, AbilitySystemComponent);
+		UAuraAbilitySystemStatics::GiveStartupAbilities(
+			this,
+			AbilitySystemComponent,
+			CharacterClass
+		);
 	}
 	BindToAbilitySystemEvents();
 }
@@ -132,6 +135,16 @@ void AAuraEnemyCharacter::Die()
 {
 	SetLifeSpan(DeathLifeSpan);
 	Super::Die();
+}
+
+AActor* AAuraEnemyCharacter::GetCombatTarget_Implementation() const
+{
+	return CombatTarget.Get();
+}
+
+void AAuraEnemyCharacter::SetCombatTarget_Implementation(AActor* InTargetActor)
+{
+	CombatTarget = InTargetActor;
 }
 
 void AAuraEnemyCharacter::InitAbilityActorInfo()

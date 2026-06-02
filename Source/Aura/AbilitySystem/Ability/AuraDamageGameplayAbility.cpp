@@ -15,6 +15,31 @@ void UAuraDamageGameplayAbility::GatherDamageTypes(FGameplayTagContainer& OutDam
 	}
 }
 
+void UAuraDamageGameplayAbility::CauseDamage(AActor* InTargetActor) const
+{
+	const UAbilitySystemComponent* const ASC = GetAbilitySystemComponentFromActorInfo();
+	if (!IsValid(ASC))
+	{
+		return;
+	}
+
+	FGameplayEffectContextHandle EffectContext = ASC->MakeEffectContext();
+	EffectContext.SetAbility(this);
+
+	if (const TOptional<FGameplayEffectSpecHandle> EffectSpecHandleOpt = MakeDamageEffectSpec(EffectContext);
+		EffectSpecHandleOpt.IsSet()
+	)
+	{
+		const FGameplayEffectSpecHandle EffectSpecHandle = EffectSpecHandleOpt.GetValue();
+		if (UAbilitySystemComponent* const TargetASC
+			= UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(InTargetActor)
+		)
+		{
+			TargetASC->ApplyGameplayEffectSpecToSelf(*EffectSpecHandle.Data);
+		}
+	}
+}
+
 TOptional<FGameplayEffectSpecHandle> UAuraDamageGameplayAbility::MakeDamageEffectSpec(
 	const FGameplayEffectContextHandle& InEffectContext) const
 {

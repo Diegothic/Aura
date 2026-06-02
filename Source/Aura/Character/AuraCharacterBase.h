@@ -36,9 +36,11 @@ public:
 	FORCEINLINE USkeletalMeshComponent* GetWeapon() const { return Weapon; }
 
 	//~ Begin ICombatInterface Interface
-	virtual FVector GetCombatSocketLocation() const override;
+	virtual FVector GetCombatSocketLocation_Implementation() const override;
 	virtual UAnimMontage* GetHitReactMontage_Implementation() const override;
 	virtual void Die() override;
+	virtual bool IsDead_Implementation() const override;
+	virtual AActor* GetAvatarActor_Implementation() override;
 	//~ End ICombatInterface Interface
 
 protected:
@@ -95,4 +97,7 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Aura|Abilities", Meta = (AllowPrivateAccess = "true"))
 	TArray<TSubclassOf<UGameplayAbility>> StartupAbilities;
+
+	UPROPERTY(Transient)
+	bool bDead = false;
 };

@@ -31,15 +31,12 @@ void UAuraProjectileSpell::SpawnProjectile(const FVector& TargetLocation)
 	const AActor* const AvatarActor = GetAvatarActorFromActorInfo();
 	AActor* const OwningActor = GetOwningActorFromActorInfo();
 
-	FTransform SpawnTransform;
-	if (const ICombatInterface* const CombatInterface = Cast<ICombatInterface>(AvatarActor))
-	{
-		const FVector SpawnLocation = CombatInterface->GetCombatSocketLocation();
-		const FRotator SpawnRotation = UKismetMathLibrary::FindLookAtRotation(SpawnLocation, TargetLocation);
+	const FVector SpawnLocation = ICombatInterface::Execute_GetCombatSocketLocation(AvatarActor);
+	const FRotator SpawnRotation = UKismetMathLibrary::FindLookAtRotation(SpawnLocation, TargetLocation);
 
-		SpawnTransform.SetLocation(SpawnLocation);
-		SpawnTransform.SetRotation(SpawnRotation.Quaternion());
-	}
+	FTransform SpawnTransform;
+	SpawnTransform.SetLocation(SpawnLocation);
+	SpawnTransform.SetRotation(SpawnRotation.Quaternion());
 
 	AAuraProjectile* const SpawnedProjectile = GetWorld()->SpawnActorDeferred<AAuraProjectile>(
 		ProjectileClass,

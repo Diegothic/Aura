@@ -16,6 +16,9 @@ public:
 	void GatherDamageTypes(FGameplayTagContainer& OutDamageTypeTags) const;
 
 protected:
+	UFUNCTION(BlueprintCallable, Category = "Aura|Damage", DisplayName = "Cause Damage")
+	void CauseDamage(AActor* InTargetActor) const;
+
 	TOptional<FGameplayEffectSpecHandle> MakeDamageEffectSpec(
 		const FGameplayEffectContextHandle& InEffectContext
 	) const;

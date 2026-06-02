@@ -9,7 +9,7 @@ int32 ICombatInterface::GetCharacterLevel() const
 	return 0;
 }
 
-FVector ICombatInterface::GetCombatSocketLocation() const
+FVector ICombatInterface::GetCombatSocketLocation_Implementation() const
 {
 	return FVector::ZeroVector;
 }
@@ -25,4 +25,14 @@ UAnimMontage* ICombatInterface::GetHitReactMontage_Implementation() const
 
 void ICombatInterface::Die()
 {
+}
+
+bool ICombatInterface::IsDead_Implementation() const
+{
+	return false;
+}
+
+AActor* ICombatInterface::GetAvatarActor_Implementation()
+{
+	return nullptr;
 }
