@@ -3,10 +3,23 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "UObject/Interface.h"
 #include "CombatInterface.generated.h"
 
 class UAnimMontage;
+
+USTRUCT(BlueprintType)
+struct FAuraTaggedMontage
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TSoftObjectPtr<UAnimMontage> Montage = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FGameplayTag MontageTag = FGameplayTag::EmptyTag;
+};
 
 UINTERFACE(MinimalAPI, BlueprintType)
 class UCombatInterface : public UInterface
@@ -22,8 +35,8 @@ public:
 	virtual int32 GetCharacterLevel() const;
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Aura|Combat")
-	FVector GetCombatSocketLocation() const;
-	virtual FVector GetCombatSocketLocation_Implementation() const;
+	FVector GetCombatSocketLocation(const FGameplayTag& InMontageTag) const;
+	virtual FVector GetCombatSocketLocation_Implementation(const FGameplayTag& InMontageTag) const;
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Aura|Combat")
 	void SetFacingTagetLocation(const FVector& TargetLocation);
@@ -42,4 +55,8 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Aura|Combat")
 	AActor* GetAvatarActor();
 	virtual AActor* GetAvatarActor_Implementation();
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Aura|Combat")
+	TArray<FAuraTaggedMontage> GetAttackMontages();
+	virtual TArray<FAuraTaggedMontage> GetAttackMontages_Implementation();
 };

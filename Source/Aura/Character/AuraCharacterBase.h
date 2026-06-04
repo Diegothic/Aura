@@ -36,11 +36,12 @@ public:
 	FORCEINLINE USkeletalMeshComponent* GetWeapon() const { return Weapon; }
 
 	//~ Begin ICombatInterface Interface
-	virtual FVector GetCombatSocketLocation_Implementation() const override;
+	virtual FVector GetCombatSocketLocation_Implementation(const FGameplayTag& InMontageTag) const override;
 	virtual UAnimMontage* GetHitReactMontage_Implementation() const override;
 	virtual void Die() override;
 	virtual bool IsDead_Implementation() const override;
 	virtual AActor* GetAvatarActor_Implementation() override;
+	virtual TArray<FAuraTaggedMontage> GetAttackMontages_Implementation() override;
 	//~ End ICombatInterface Interface
 
 protected:
@@ -89,11 +90,20 @@ private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Aura|Combat", Meta = (AllowPrivateAccess = "true"))
 	FName WeaponSocket;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Aura|Combat", Meta = (AllowPrivateAccess = "true"))
-	FName WeaponSpellSocket;
+	UPROPERTY(EditDefaultsOnly, Category = "Aura|Combat")
+	FName WeaponTipSocket;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Aura|Combat")
+	FName RightHandSocket;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Aura|Combat")
+	FName LeftHandSocket;
 
 	UPROPERTY(EditAnywhere, Category = "Aura|Combat")
 	TObjectPtr<UAnimMontage> HitReactMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Aura|Combat")
+	TArray<FAuraTaggedMontage> AttackMontages;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Aura|Abilities", Meta = (AllowPrivateAccess = "true"))
 	TArray<TSubclassOf<UGameplayAbility>> StartupAbilities;

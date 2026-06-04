@@ -6,6 +6,7 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "Actor/AuraProjectile.h"
+#include "GameplayTags/AuraGameplayTags.h"
 #include "Interaction/CombatInterface.h"
 #include "Kismet/KismetMathLibrary.h"
 
@@ -31,7 +32,10 @@ void UAuraProjectileSpell::SpawnProjectile(const FVector& TargetLocation)
 	const AActor* const AvatarActor = GetAvatarActorFromActorInfo();
 	AActor* const OwningActor = GetOwningActorFromActorInfo();
 
-	const FVector SpawnLocation = ICombatInterface::Execute_GetCombatSocketLocation(AvatarActor);
+	const FVector SpawnLocation = ICombatInterface::Execute_GetCombatSocketLocation(
+		AvatarActor,
+		FAuraGameplayTags::Get().Montage_Attack_Weapon
+	);
 	const FRotator SpawnRotation = UKismetMathLibrary::FindLookAtRotation(SpawnLocation, TargetLocation);
 
 	FTransform SpawnTransform;

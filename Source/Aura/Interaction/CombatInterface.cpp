@@ -9,7 +9,7 @@ int32 ICombatInterface::GetCharacterLevel() const
 	return 0;
 }
 
-FVector ICombatInterface::GetCombatSocketLocation_Implementation() const
+FVector ICombatInterface::GetCombatSocketLocation_Implementation(const FGameplayTag& InMontageTag) const
 {
 	return FVector::ZeroVector;
 }
@@ -35,4 +35,9 @@ bool ICombatInterface::IsDead_Implementation() const
 AActor* ICombatInterface::GetAvatarActor_Implementation()
 {
 	return nullptr;
+}
+
+TArray<FAuraTaggedMontage> ICombatInterface::GetAttackMontages_Implementation()
+{
+	return {};
 }

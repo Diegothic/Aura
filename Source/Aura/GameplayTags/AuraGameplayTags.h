@@ -67,6 +67,12 @@ public:
 	FGameplayTag Ability_Attack;
 	// ~ End Ability Tags
 
+	// ~ Begin Montage Tags
+	FGameplayTag Montage_Attack_Weapon;
+	FGameplayTag Montage_Attack_RightHand;
+	FGameplayTag Montage_Attack_LeftHand;
+	// ~ End Montage Tags
+
 private:
 	static AURA_API FAuraGameplayTags Instance;
 };

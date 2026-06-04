@@ -222,22 +222,25 @@ void AAuraEnemyCharacter::OnHitReactTagChangedEvent(const FGameplayTag InChanged
 {
 	bReactingToHit = InNewTagCount > 0;
 
-	if (UCharacterMovementComponent* const MovementComp = GetCharacterMovement(); IsValid(MovementComp))
+	if (HasAuthority())
 	{
-		if (bReactingToHit)
+		if (UCharacterMovementComponent* const MovementComp = GetCharacterMovement(); IsValid(MovementComp))
 		{
-			MovementComp->StopMovementImmediately();
+			if (bReactingToHit)
+			{
+				MovementComp->StopMovementImmediately();
+			}
+
+			MovementComp->SetMovementMode(bReactingToHit ? MOVE_Custom : MOVE_Walking);
 		}
 
-		MovementComp->SetMovementMode(bReactingToHit ? MOVE_Custom : MOVE_Walking);
-	}
-
-	if (AAIController* const AIController = Cast<AAIController>(GetController()))
-	{
-		if (UBlackboardComponent* const BlackboardComp = AIController->GetBlackboardComponent();
-			IsValid(BlackboardComp))
+		if (AAIController* const AIController = Cast<AAIController>(GetController()))
 		{
-			BlackboardComp->SetValueAsBool(AuraEnemyCharacterPrivate::HitReactingBlackboardKeyName, bReactingToHit);
+			if (UBlackboardComponent* const BlackboardComp = AIController->GetBlackboardComponent();
+				IsValid(BlackboardComp))
+			{
+				BlackboardComp->SetValueAsBool(AuraEnemyCharacterPrivate::HitReactingBlackboardKeyName, bReactingToHit);
+			}
 		}
 	}
 }

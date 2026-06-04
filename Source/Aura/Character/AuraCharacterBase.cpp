@@ -7,6 +7,7 @@
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameplayTags/AuraGameplayTags.h"
 
 
 AAuraCharacterBase::AAuraCharacterBase()
@@ -46,14 +47,34 @@ UAbilitySystemComponent* AAuraCharacterBase::GetAbilitySystemComponent() const
 	return AbilitySystemComponent;
 }
 
-FVector AAuraCharacterBase::GetCombatSocketLocation_Implementation() const
+FVector AAuraCharacterBase::GetCombatSocketLocation_Implementation(const FGameplayTag& InMontageTag) const
 {
-	if (!Weapon || !Weapon->DoesSocketExist(WeaponSpellSocket))
+	if (InMontageTag == FAuraGameplayTags::Get().Montage_Attack_Weapon
+		&& IsValid(Weapon)
+		&& Weapon->DoesSocketExist(WeaponTipSocket)
+	)
 	{
-		return GetActorLocation();
+		return Weapon->GetSocketLocation(WeaponTipSocket);
 	}
 
-	return Weapon->GetSocketLocation(WeaponSpellSocket);
+	if (const USkeletalMeshComponent* const CharacterMesh = GetMesh(); IsValid(CharacterMesh))
+	{
+		if (InMontageTag == FAuraGameplayTags::Get().Montage_Attack_RightHand
+			&& CharacterMesh->DoesSocketExist(RightHandSocket)
+		)
+		{
+			return CharacterMesh->GetSocketLocation(RightHandSocket);
+		}
+
+		if (InMontageTag == FAuraGameplayTags::Get().Montage_Attack_LeftHand
+			&& CharacterMesh->DoesSocketExist(LeftHandSocket)
+		)
+		{
+			return CharacterMesh->GetSocketLocation(LeftHandSocket);
+		}
+	}
+
+	return GetActorLocation();
 }
 
 UAnimMontage* AAuraCharacterBase::GetHitReactMontage_Implementation() const
@@ -83,6 +104,11 @@ bool AAuraCharacterBase::IsDead_Implementation() const
 AActor* AAuraCharacterBase::GetAvatarActor_Implementation()
 {
 	return this;
+}
+
+TArray<FAuraTaggedMontage> AAuraCharacterBase::GetAttackMontages_Implementation()
+{
+	return AttackMontages;
 }
 
 void AAuraCharacterBase::InitAbilityActorInfo()
