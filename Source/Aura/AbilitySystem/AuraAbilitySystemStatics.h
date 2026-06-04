@@ -81,6 +81,9 @@ public:
 		const TArray<AActor*>& ActorsToIgnore
 	);
 
+	UFUNCTION(BlueprintPure, Category = "Aura|AbilitySystem|Helpers")
+	static bool AreActorsFriendly(const AActor* InActorA, const AActor* InActorB);
+
 private:
 	static bool CreateWidgetControllerParams(const UObject* WorldContextObject, FWidgetControllerParams& OutParams);
 };

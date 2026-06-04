@@ -39,5 +39,5 @@ float UMMC_MaxHealth::CalculateBaseMagnitude_Implementation(const FGameplayEffec
 		CharacterLevel = CombatInterface->GetCharacterLevel();
 	}
 
-	return 80.0f + (VigorMagnitude * 2.5f) + (CharacterLevel * 10.0f);
+	return 10.0f + (VigorMagnitude * 2.5f) + (CharacterLevel * 10.0f);
 }

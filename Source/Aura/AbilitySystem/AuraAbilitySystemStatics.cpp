@@ -255,6 +255,19 @@ void UAuraAbilitySystemStatics::GetAliveCombatActorsInRadius(
 	}
 }
 
+bool UAuraAbilitySystemStatics::AreActorsFriendly(const AActor* InActorA, const AActor* InActorB)
+{
+	if (!IsValid(InActorA) || !IsValid(InActorB))
+	{
+		return false;
+	}
+
+	const FName PlayerTag = FName{"Player"};
+	const FName EnemyTag = FName{"Enemy"};
+	return (InActorA->ActorHasTag(PlayerTag) && InActorB->ActorHasTag(PlayerTag))
+		|| (InActorA->ActorHasTag(EnemyTag) && InActorB->ActorHasTag(EnemyTag));
+}
+
 bool UAuraAbilitySystemStatics::CreateWidgetControllerParams(
 	const UObject* WorldContextObject,
 	FWidgetControllerParams& OutParams
