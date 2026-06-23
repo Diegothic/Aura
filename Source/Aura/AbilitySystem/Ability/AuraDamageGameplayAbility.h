@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AuraGameplayAbility.h"
+#include "Interaction/CombatInterface.h"
 #include "AuraDamageGameplayAbility.generated.h"
 
 UCLASS()
@@ -14,6 +15,9 @@ class AURA_API UAuraDamageGameplayAbility : public UAuraGameplayAbility
 public:
 	UFUNCTION(BlueprintPure, Category = "Aura|Damage")
 	void GatherDamageTypes(FGameplayTagContainer& OutDamageTypeTags) const;
+
+	UFUNCTION(BlueprintCallable, Category = "Aura|Damage")
+	FAuraTaggedMontage GetRandomAttackMontage() const;
 
 protected:
 	UFUNCTION(BlueprintCallable, Category = "Aura|Damage", DisplayName = "Cause Damage")

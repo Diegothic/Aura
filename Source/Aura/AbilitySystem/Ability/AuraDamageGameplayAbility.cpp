@@ -15,6 +15,24 @@ void UAuraDamageGameplayAbility::GatherDamageTypes(FGameplayTagContainer& OutDam
 	}
 }
 
+FAuraTaggedMontage UAuraDamageGameplayAbility::GetRandomAttackMontage() const
+{
+	AActor* const AvatarActor = GetAvatarActorFromActorInfo();
+	if (!IsValid(AvatarActor))
+	{
+		return {};
+	}
+
+	const TArray<FAuraTaggedMontage> AttackTaggedMontages = ICombatInterface::Execute_GetAttackMontages(AvatarActor);
+	if (AttackTaggedMontages.IsEmpty())
+	{
+		return {};
+	}
+
+	const int32 RandIdx = FMath::RandRange(0, AttackTaggedMontages.Num() - 1);
+	return AttackTaggedMontages[RandIdx];
+}
+
 void UAuraDamageGameplayAbility::CauseDamage(AActor* InTargetActor) const
 {
 	const UAbilitySystemComponent* const ASC = GetAbilitySystemComponentFromActorInfo();

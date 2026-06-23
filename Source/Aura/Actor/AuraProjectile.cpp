@@ -6,6 +6,7 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "NiagaraFunctionLibrary.h"
+#include "AbilitySystem/AuraAbilitySystemStatics.h"
 #include "Collision/AuraCollisionChannels.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
@@ -78,11 +79,19 @@ void AAuraProjectile::OnSphereOverlap(
 		return;
 	}
 
+	if (OtherActor == this)
+	{
+		return;
+	}
+
 	if (DamageEffectSpecHandle.IsValid())
 	{
-		if (const FGameplayEffectContextHandle& DamageEffectContext
-				= DamageEffectSpecHandle.Data.Get()->GetEffectContext();
-			OtherActor == DamageEffectContext.GetEffectCauser())
+		const FGameplayEffectContextHandle& DamageEffectContext
+			= DamageEffectSpecHandle.Data.Get()->GetEffectContext();
+		if (const AActor* const EffectCauser = DamageEffectContext.GetEffectCauser();
+			OtherActor == EffectCauser
+			|| UAuraAbilitySystemStatics::AreActorsFriendly(EffectCauser, OtherActor)
+		)
 		{
 			return;
 		}
