@@ -19,6 +19,7 @@ namespace AuraEnemyCharacterPrivate
 {
 	const FName HitReactingBlackboardKeyName = FName{"HitReacting"};
 	const FName RangedAttackerBlackboardKeyName = FName{"RangedAttacker"};
+	const FName IsDeadBlackboardKeyName = FName{"IsDead"};
 } // namespace AuraEnemyCharacterPrivate
 
 AAuraEnemyCharacter::AAuraEnemyCharacter()
@@ -134,6 +135,19 @@ int32 AAuraEnemyCharacter::GetCharacterLevel() const
 void AAuraEnemyCharacter::Die()
 {
 	SetLifeSpan(DeathLifeSpan);
+
+	if (AAIController* const AIController = Cast<AAIController>(GetController()))
+	{
+		if (UBlackboardComponent* const BlackboardComp = AIController->GetBlackboardComponent();
+			IsValid(BlackboardComp))
+		{
+			BlackboardComp->SetValueAsBool(
+				AuraEnemyCharacterPrivate::IsDeadBlackboardKeyName,
+				true
+			);
+		}
+	}
+
 	Super::Die();
 }
 
