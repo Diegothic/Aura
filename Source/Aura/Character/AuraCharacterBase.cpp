@@ -8,6 +8,7 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameplayTags/AuraGameplayTags.h"
+#include "Niagara/Classes/NiagaraSystem.h"
 
 
 AAuraCharacterBase::AAuraCharacterBase()
@@ -49,7 +50,7 @@ UAbilitySystemComponent* AAuraCharacterBase::GetAbilitySystemComponent() const
 
 FVector AAuraCharacterBase::GetCombatSocketLocation_Implementation(const FGameplayTag& InMontageTag) const
 {
-	if (InMontageTag == FAuraGameplayTags::Get().Montage_Attack_Weapon
+	if (InMontageTag == FAuraGameplayTags::Get().CombatSocket_Weapon
 		&& IsValid(Weapon)
 		&& Weapon->DoesSocketExist(WeaponTipSocket)
 	)
@@ -59,14 +60,14 @@ FVector AAuraCharacterBase::GetCombatSocketLocation_Implementation(const FGamepl
 
 	if (const USkeletalMeshComponent* const CharacterMesh = GetMesh(); IsValid(CharacterMesh))
 	{
-		if (InMontageTag == FAuraGameplayTags::Get().Montage_Attack_RightHand
+		if (InMontageTag == FAuraGameplayTags::Get().CombatSocket_RightHand
 			&& CharacterMesh->DoesSocketExist(RightHandSocket)
 		)
 		{
 			return CharacterMesh->GetSocketLocation(RightHandSocket);
 		}
 
-		if (InMontageTag == FAuraGameplayTags::Get().Montage_Attack_LeftHand
+		if (InMontageTag == FAuraGameplayTags::Get().CombatSocket_LeftHand
 			&& CharacterMesh->DoesSocketExist(LeftHandSocket)
 		)
 		{
@@ -109,6 +110,25 @@ AActor* AAuraCharacterBase::GetAvatarActor_Implementation()
 TArray<FAuraTaggedMontage> AAuraCharacterBase::GetAttackMontages_Implementation()
 {
 	return AttackMontages;
+}
+
+FAuraTaggedMontage AAuraCharacterBase::GetMatchingAttackMontage_Implementation(
+	const FGameplayTagContainer& InMontageTags)
+{
+	for (const FAuraTaggedMontage& TaggedMontage : AttackMontages)
+	{
+		if (InMontageTags.HasTagExact(TaggedMontage.MontageTag))
+		{
+			return TaggedMontage;
+		}
+	}
+
+	return {};
+}
+
+UNiagaraSystem* AAuraCharacterBase::GetHitImpactEffect_Implementation()
+{
+	return HitImpactEffect.LoadSynchronous();
 }
 
 void AAuraCharacterBase::InitAbilityActorInfo()

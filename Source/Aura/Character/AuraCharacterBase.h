@@ -42,6 +42,10 @@ public:
 	virtual bool IsDead_Implementation() const override;
 	virtual AActor* GetAvatarActor_Implementation() override;
 	virtual TArray<FAuraTaggedMontage> GetAttackMontages_Implementation() override;
+	virtual FAuraTaggedMontage GetMatchingAttackMontage_Implementation(
+		const FGameplayTagContainer& InMontageTags
+	) override;
+	virtual UNiagaraSystem* GetHitImpactEffect_Implementation() override;
 	//~ End ICombatInterface Interface
 
 protected:
@@ -104,6 +108,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Aura|Combat")
 	TArray<FAuraTaggedMontage> AttackMontages;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Aura|Combat")
+	TSoftObjectPtr<UNiagaraSystem> HitImpactEffect;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Aura|Abilities", Meta = (AllowPrivateAccess = "true"))
 	TArray<TSubclassOf<UGameplayAbility>> StartupAbilities;

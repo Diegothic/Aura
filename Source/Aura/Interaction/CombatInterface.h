@@ -7,6 +7,7 @@
 #include "UObject/Interface.h"
 #include "CombatInterface.generated.h"
 
+class UNiagaraSystem;
 class UAnimMontage;
 
 USTRUCT(BlueprintType)
@@ -19,6 +20,12 @@ struct FAuraTaggedMontage
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FGameplayTag MontageTag = FGameplayTag::EmptyTag;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FGameplayTag SocketTag = FGameplayTag::EmptyTag;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TSoftObjectPtr<USoundBase> ImpactSound = nullptr;
 };
 
 UINTERFACE(MinimalAPI, BlueprintType)
@@ -59,4 +66,12 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Aura|Combat")
 	TArray<FAuraTaggedMontage> GetAttackMontages();
 	virtual TArray<FAuraTaggedMontage> GetAttackMontages_Implementation();
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Aura|Combat")
+	FAuraTaggedMontage GetMatchingAttackMontage(const FGameplayTagContainer& InMontageTags);
+	virtual FAuraTaggedMontage GetMatchingAttackMontage_Implementation(const FGameplayTagContainer& InMontageTags);
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Aura|Combat")
+	UNiagaraSystem* GetHitImpactEffect();
+	virtual UNiagaraSystem* GetHitImpactEffect_Implementation();
 };

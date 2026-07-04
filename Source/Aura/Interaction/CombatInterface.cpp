@@ -41,3 +41,13 @@ TArray<FAuraTaggedMontage> ICombatInterface::GetAttackMontages_Implementation()
 {
 	return {};
 }
+
+FAuraTaggedMontage ICombatInterface::GetMatchingAttackMontage_Implementation(const FGameplayTagContainer& InMontageTags)
+{
+	return {};
+}
+
+UNiagaraSystem* ICombatInterface::GetHitImpactEffect_Implementation()
+{
+	return nullptr;
+}
