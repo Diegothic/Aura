@@ -8,6 +8,7 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameplayTags/AuraGameplayTags.h"
+#include "Kismet/GameplayStatics.h"
 #include "Niagara/Classes/NiagaraSystem.h"
 
 
@@ -206,6 +207,17 @@ void AAuraCharacterBase::Multicast_HandleDeath_Implementation()
 	if (UCapsuleComponent* const CapsuleComp = GetCapsuleComponent())
 	{
 		CapsuleComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	}
+
+	const FVector ActorLocation = GetActorLocation();
+	const FRotator ActorRotation = GetActorRotation();
+
+	if (!DeathSound.IsNull())
+	{
+		if (USoundBase* const DeathSoundInst = DeathSound.LoadSynchronous(); IsValid(DeathSoundInst))
+		{
+			UGameplayStatics::PlaySoundAtLocation(this, DeathSoundInst, ActorLocation, ActorRotation);
+		}
 	}
 
 	Dissolve();

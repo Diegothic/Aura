@@ -112,6 +112,9 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Aura|Combat")
 	TSoftObjectPtr<UNiagaraSystem> HitImpactEffect;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Aura|Combat")
+	TSoftObjectPtr<USoundBase> DeathSound;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Aura|Abilities", Meta = (AllowPrivateAccess = "true"))
 	TArray<TSubclassOf<UGameplayAbility>> StartupAbilities;
 

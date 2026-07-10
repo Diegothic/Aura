@@ -37,7 +37,7 @@ void AAuraProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 
-	Sphere->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::OnSphereOverlap);
+	Sphere->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::OnSphereBeginOverlap);
 
 	if (IsValid(SpawnEffect))
 	{
@@ -65,7 +65,16 @@ void AAuraProjectile::BeginPlay()
 	);
 }
 
-void AAuraProjectile::OnSphereOverlap(
+void AAuraProjectile::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	GetWorld()->GetTimerManager().ClearTimer(LifeTimerHandle);
+
+	Sphere->OnComponentBeginOverlap.RemoveDynamic(this, &ThisClass::OnSphereBeginOverlap);
+
+	Super::EndPlay(EndPlayReason);
+}
+
+void AAuraProjectile::OnSphereBeginOverlap(
 	UPrimitiveComponent* OverlappedComponent,
 	AActor* OtherActor,
 	UPrimitiveComponent* OtherComp,
@@ -74,12 +83,17 @@ void AAuraProjectile::OnSphereOverlap(
 	const FHitResult& SweepResult
 )
 {
+	HandleProjectileHit(OtherActor, bFromSweep ? static_cast<FVector>(SweepResult.ImpactPoint) : GetActorLocation());
+}
+
+void AAuraProjectile::HandleProjectileHit(AActor* InHitActor, const FVector& InImpactPoint)
+{
 	if (bHit || !HasAuthority())
 	{
 		return;
 	}
 
-	if (OtherActor == this)
+	if (InHitActor == this)
 	{
 		return;
 	}
@@ -89,15 +103,15 @@ void AAuraProjectile::OnSphereOverlap(
 		const FGameplayEffectContextHandle& DamageEffectContext
 			= DamageEffectSpecHandle.Data.Get()->GetEffectContext();
 		if (const AActor* const EffectCauser = DamageEffectContext.GetEffectCauser();
-			OtherActor == EffectCauser
-			|| UAuraAbilitySystemStatics::AreActorsFriendly(EffectCauser, OtherActor)
+			InHitActor == EffectCauser
+			|| UAuraAbilitySystemStatics::AreActorsFriendly(EffectCauser, InHitActor)
 		)
 		{
 			return;
 		}
 	}
 
-	const FVector HitLocation_WS = bFromSweep ? static_cast<FVector>(SweepResult.ImpactPoint) : GetActorLocation();
+	const FVector HitLocation_WS = InImpactPoint;
 
 	bHit = true;
 	PlayOnHitEffects(HitLocation_WS);
@@ -105,7 +119,7 @@ void AAuraProjectile::OnSphereOverlap(
 	MulticastOnHit(HitLocation_WS);
 
 	if (UAbilitySystemComponent* const TargetASC
-		= UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor)
+		= UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(InHitActor)
 	)
 	{
 		TargetASC->ApplyGameplayEffectSpecToSelf(*DamageEffectSpecHandle.Data);

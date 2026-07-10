@@ -22,6 +22,7 @@ public:
 protected:
 	//~ Begin AActor Interface
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	//~ End AActor Interface
 
 public:
@@ -38,7 +39,7 @@ public:
 
 private:
 	UFUNCTION()
-	void OnSphereOverlap(
+	void OnSphereBeginOverlap(
 		UPrimitiveComponent* OverlappedComponent,
 		AActor* OtherActor,
 		UPrimitiveComponent* OtherComp,
@@ -46,6 +47,8 @@ private:
 		bool bFromSweep,
 		const FHitResult& SweepResult
 	);
+
+	void HandleProjectileHit(AActor* InHitActor, const FVector& InImpactPoint);
 
 	void PlayOnHitEffects(const FVector& InLocation_WS) const;
 
