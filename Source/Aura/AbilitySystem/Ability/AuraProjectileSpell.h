@@ -22,7 +22,7 @@ protected:
 	// ~ End UGameplayAbility
 
 	UFUNCTION(BlueprintCallable, Category = "Aura|Spell")
-	void SpawnProjectile(const FVector& TargetLocation);
+	void SpawnProjectile(const FVector& InTargetLocation, const FGameplayTag& InCombatSocketTag);
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Aura|Spell", meta = (AllowPrivateAccess = "true"))

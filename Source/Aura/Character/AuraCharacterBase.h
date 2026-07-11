@@ -103,6 +103,9 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Aura|Combat")
 	FName LeftHandSocket;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Aura|Combat")
+	FName TailSocket;
+
 	UPROPERTY(EditAnywhere, Category = "Aura|Combat")
 	TObjectPtr<UAnimMontage> HitReactMontage;
 

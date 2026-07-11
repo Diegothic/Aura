@@ -6,7 +6,6 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "Actor/AuraProjectile.h"
-#include "GameplayTags/AuraGameplayTags.h"
 #include "Interaction/CombatInterface.h"
 #include "Kismet/KismetMathLibrary.h"
 
@@ -21,7 +20,7 @@ void UAuraProjectileSpell::ActivateAbility(
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 }
 
-void UAuraProjectileSpell::SpawnProjectile(const FVector& TargetLocation)
+void UAuraProjectileSpell::SpawnProjectile(const FVector& InTargetLocation, const FGameplayTag& InCombatSocketTag)
 {
 	const FGameplayAbilityActivationInfo ActivationInfo = GetCurrentActivationInfo();
 	if (!HasAuthority(&ActivationInfo))
@@ -34,9 +33,9 @@ void UAuraProjectileSpell::SpawnProjectile(const FVector& TargetLocation)
 
 	const FVector SpawnLocation = ICombatInterface::Execute_GetCombatSocketLocation(
 		AvatarActor,
-		FAuraGameplayTags::Get().CombatSocket_Weapon
+		InCombatSocketTag
 	);
-	const FRotator SpawnRotation = UKismetMathLibrary::FindLookAtRotation(SpawnLocation, TargetLocation);
+	const FRotator SpawnRotation = UKismetMathLibrary::FindLookAtRotation(SpawnLocation, InTargetLocation);
 
 	FTransform SpawnTransform;
 	SpawnTransform.SetLocation(SpawnLocation);
@@ -63,7 +62,7 @@ void UAuraProjectileSpell::SpawnProjectile(const FVector& TargetLocation)
 		Actors.Emplace(SpawnedProjectile);
 		EffectContext.AddActors(Actors);
 		FHitResult HitResult;
-		HitResult.Location = TargetLocation;
+		HitResult.Location = InTargetLocation;
 		EffectContext.AddHitResult(HitResult);
 
 		if (const TOptional<FGameplayEffectSpecHandle> EffectSpecHandleOpt = MakeDamageEffectSpec(EffectContext);

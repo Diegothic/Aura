@@ -74,6 +74,13 @@ FVector AAuraCharacterBase::GetCombatSocketLocation_Implementation(const FGamepl
 		{
 			return CharacterMesh->GetSocketLocation(LeftHandSocket);
 		}
+
+		if (InMontageTag == FAuraGameplayTags::Get().CombatSocket_Tail
+			&& CharacterMesh->DoesSocketExist(TailSocket)
+		)
+		{
+			return CharacterMesh->GetSocketLocation(TailSocket);
+		}
 	}
 
 	return GetActorLocation();
