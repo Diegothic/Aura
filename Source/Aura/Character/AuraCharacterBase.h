@@ -46,6 +46,8 @@ public:
 		const FGameplayTagContainer& InMontageTags
 	) override;
 	virtual UNiagaraSystem* GetHitImpactEffect_Implementation() override;
+	virtual int32 GetMinionCount_Implementation() override;
+	virtual int32 ChangeMinionCount_Implementation(int32 InValueChange) override;
 	//~ End ICombatInterface Interface
 
 protected:
@@ -120,6 +122,8 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Aura|Abilities", Meta = (AllowPrivateAccess = "true"))
 	TArray<TSubclassOf<UGameplayAbility>> StartupAbilities;
+
+	int32 MinionCount = 0;
 
 	UPROPERTY(Transient)
 	bool bDead = false;

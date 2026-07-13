@@ -19,6 +19,7 @@ namespace AuraEnemyCharacterPrivate
 {
 	const FName HitReactingBlackboardKeyName = FName{"HitReacting"};
 	const FName RangedAttackerBlackboardKeyName = FName{"RangedAttacker"};
+	const FName ElementalistBlackboardKeyName = FName{"Elementalist"};
 	const FName IsDeadBlackboardKeyName = FName{"IsDead"};
 } // namespace AuraEnemyCharacterPrivate
 
@@ -96,6 +97,12 @@ void AAuraEnemyCharacter::PossessedBy(AController* InNewController)
 			BlackboardComp->SetValueAsBool(
 				AuraEnemyCharacterPrivate::RangedAttackerBlackboardKeyName,
 				bIsRangedAttacker
+			);
+
+			const bool bIsElementalist = CharacterClass == ECharacterClass::Elementalist;
+			BlackboardComp->SetValueAsBool(
+				AuraEnemyCharacterPrivate::ElementalistBlackboardKeyName,
+				bIsElementalist
 			);
 		}
 	}

@@ -156,6 +156,10 @@ void FAuraGameplayTags::Init()
 		FName("Ability.Attack"),
 		FString("Attack Ability")
 	);
+	Instance.Ability_Summon = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Ability.Summon"),
+		FString("Summon Ability")
+	);
 
 	// Combat Socket Tags
 	Instance.CombatSocket_Weapon = UGameplayTagsManager::Get().AddNativeGameplayTag(

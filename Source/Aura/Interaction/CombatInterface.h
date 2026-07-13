@@ -74,4 +74,12 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Aura|Combat")
 	UNiagaraSystem* GetHitImpactEffect();
 	virtual UNiagaraSystem* GetHitImpactEffect_Implementation();
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Aura|Combat")
+	int32 GetMinionCount();
+	virtual int32 GetMinionCount_Implementation();
+	
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Aura|Combat")
+	int32 ChangeMinionCount(int32 InValueChange);
+	virtual int32 ChangeMinionCount_Implementation(int32 InValueChange);
 };

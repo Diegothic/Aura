@@ -139,6 +139,17 @@ UNiagaraSystem* AAuraCharacterBase::GetHitImpactEffect_Implementation()
 	return HitImpactEffect.LoadSynchronous();
 }
 
+int32 AAuraCharacterBase::GetMinionCount_Implementation()
+{
+	return MinionCount;
+}
+
+int32 AAuraCharacterBase::ChangeMinionCount_Implementation(const int32 InValueChange)
+{
+	MinionCount += InValueChange;
+	return MinionCount;
+}
+
 void AAuraCharacterBase::InitAbilityActorInfo()
 {
 }

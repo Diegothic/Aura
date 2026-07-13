@@ -51,3 +51,13 @@ UNiagaraSystem* ICombatInterface::GetHitImpactEffect_Implementation()
 {
 	return nullptr;
 }
+
+int32 ICombatInterface::GetMinionCount_Implementation()
+{
+	return 0;
+}
+
+int32 ICombatInterface::ChangeMinionCount_Implementation(const int32 InValueChange)
+{
+	return 0;
+}

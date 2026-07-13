@@ -65,6 +65,7 @@ public:
 
 	// ~ Begin Ability Tags
 	FGameplayTag Ability_Attack;
+	FGameplayTag Ability_Summon;
 	// ~ End Ability Tags
 
 	// ~ Begin Combat Socket Tags
