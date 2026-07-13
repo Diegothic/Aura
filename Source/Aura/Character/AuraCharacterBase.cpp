@@ -224,7 +224,7 @@ void AAuraCharacterBase::Multicast_HandleDeath_Implementation()
 
 	if (UCapsuleComponent* const CapsuleComp = GetCapsuleComponent())
 	{
-		CapsuleComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+		CapsuleComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
 
 	const FVector ActorLocation = GetActorLocation();
