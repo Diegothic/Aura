@@ -10,7 +10,6 @@
 #include "GameFramework/Character.h"
 #include "GameplayTags/AuraGameplayTags.h"
 #include "Interaction/CombatInterface.h"
-#include "Kismet/GameplayStatics.h"
 #include "Player/AuraPlayerController.h"
 
 
@@ -221,10 +220,26 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 
 			if (EffectProps.InstigatorCharacter != EffectProps.TargetCharacter)
 			{
-				if (AAuraPlayerController* const AuraPC
-						= Cast<AAuraPlayerController>(EffectProps.InstigatorCharacter->GetController());
-					IsValid(AuraPC)
-				)
+				AAuraPlayerController* const AuraPC = [&EffectProps]() -> AAuraPlayerController*
+				{
+					if (AAuraPlayerController* const InstigatorPC
+							= Cast<AAuraPlayerController>(EffectProps.InstigatorCharacter->GetController());
+						IsValid(InstigatorPC)
+					)
+					{
+						return InstigatorPC;
+					}
+					if (AAuraPlayerController* const TargetPC
+							= Cast<AAuraPlayerController>(EffectProps.TargetCharacter->GetController());
+						IsValid(TargetPC)
+					)
+					{
+						return TargetPC;
+					}
+
+					return nullptr;
+				}();
+				if (IsValid(AuraPC))
 				{
 					const bool bIsBlockedHit
 						= UAuraAbilitySystemStatics::GetIsBlockedHit(EffectProps.EffectContextHandle);

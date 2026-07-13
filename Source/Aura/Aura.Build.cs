@@ -25,6 +25,9 @@ public class Aura : ModuleRules
 		// Niagara Particle System
 		PrivateDependencyModuleNames.AddRange(new string[] {"Niagara"});
 
+		// AI
+		PrivateDependencyModuleNames.AddRange(new string[] {"AIModule"});
+
 		// Uncomment if you are using online features
 		// PrivateDependencyModuleNames.Add("OnlineSubsystem");
 

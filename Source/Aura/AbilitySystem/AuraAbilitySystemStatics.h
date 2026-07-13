@@ -38,8 +38,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Aura|AbilitySystem|CharacterClassDefaults")
 	static void GiveStartupAbilities(
-		const UObject* WorldContextObject,
-		UAbilitySystemComponent* DestASC
+		const UObject* InWorldContextObject,
+		UAbilitySystemComponent* InDestASC,
+		ECharacterClass InCharacterClass
 	);
 
 	UFUNCTION(BlueprintPure, Category = "Aura|AbilitySystem|CharacterClassDefaults")
@@ -66,6 +67,22 @@ public:
 		UPARAM(ref) FGameplayEffectContextHandle& InEffectContextHandle,
 		bool bInIsCriticalHit
 	);
+
+	UFUNCTION(
+		BlueprintCallable,
+		Category = "Aura|AbilitySystem|Helpers",
+		meta = (WorldContext = "InWorldContextObject")
+	)
+	static void GetAliveCombatActorsInRadius(
+		const UObject* InWorldContextObject,
+		const FVector& OriginLocation_WS,
+		float Radius_Cm,
+		TArray<AActor*>& OutOverlappingActors,
+		const TArray<AActor*>& ActorsToIgnore
+	);
+
+	UFUNCTION(BlueprintPure, Category = "Aura|AbilitySystem|Helpers")
+	static bool AreActorsFriendly(const AActor* InActorA, const AActor* InActorB);
 
 private:
 	static bool CreateWidgetControllerParams(const UObject* WorldContextObject, FWidgetControllerParams& OutParams);

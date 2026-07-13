@@ -36,9 +36,18 @@ public:
 	FORCEINLINE USkeletalMeshComponent* GetWeapon() const { return Weapon; }
 
 	//~ Begin ICombatInterface Interface
-	virtual FVector GetCombatSocketLocation() const override;
+	virtual FVector GetCombatSocketLocation_Implementation(const FGameplayTag& InMontageTag) const override;
 	virtual UAnimMontage* GetHitReactMontage_Implementation() const override;
 	virtual void Die() override;
+	virtual bool IsDead_Implementation() const override;
+	virtual AActor* GetAvatarActor_Implementation() override;
+	virtual TArray<FAuraTaggedMontage> GetAttackMontages_Implementation() override;
+	virtual FAuraTaggedMontage GetMatchingAttackMontage_Implementation(
+		const FGameplayTagContainer& InMontageTags
+	) override;
+	virtual UNiagaraSystem* GetHitImpactEffect_Implementation() override;
+	virtual int32 GetMinionCount_Implementation() override;
+	virtual int32 ChangeMinionCount_Implementation(int32 InValueChange) override;
 	//~ End ICombatInterface Interface
 
 protected:
@@ -87,12 +96,35 @@ private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Aura|Combat", Meta = (AllowPrivateAccess = "true"))
 	FName WeaponSocket;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Aura|Combat", Meta = (AllowPrivateAccess = "true"))
-	FName WeaponSpellSocket;
+	UPROPERTY(EditDefaultsOnly, Category = "Aura|Combat")
+	FName WeaponTipSocket;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Aura|Combat")
+	FName RightHandSocket;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Aura|Combat")
+	FName LeftHandSocket;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Aura|Combat")
+	FName TailSocket;
 
 	UPROPERTY(EditAnywhere, Category = "Aura|Combat")
 	TObjectPtr<UAnimMontage> HitReactMontage;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Aura|Combat")
+	TArray<FAuraTaggedMontage> AttackMontages;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Aura|Combat")
+	TSoftObjectPtr<UNiagaraSystem> HitImpactEffect;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Aura|Combat")
+	TSoftObjectPtr<USoundBase> DeathSound;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Aura|Abilities", Meta = (AllowPrivateAccess = "true"))
 	TArray<TSubclassOf<UGameplayAbility>> StartupAbilities;
+
+	int32 MinionCount = 0;
+
+	UPROPERTY(Transient)
+	bool bDead = false;
 };

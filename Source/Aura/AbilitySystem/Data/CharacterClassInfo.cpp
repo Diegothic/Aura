@@ -4,6 +4,20 @@
 #include "CharacterClassInfo.h"
 
 
+bool Aura::CharacterClass::IsRangedAttacker(const ECharacterClass InCharacterClass)
+{
+	switch (InCharacterClass)
+	{
+	case ECharacterClass::Elementalist:
+	case ECharacterClass::Ranger:
+		return true;
+	case ECharacterClass::Warrior:
+		return false;
+	default:
+		return false;
+	}
+}
+
 const FCharacterClassDefaultInfo& UCharacterClassInfo::GetCharacterClassDefaultInfo(
 	const ECharacterClass CharacterClass
 ) const

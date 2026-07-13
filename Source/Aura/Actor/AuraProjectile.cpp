@@ -6,6 +6,7 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "NiagaraFunctionLibrary.h"
+#include "AbilitySystem/AuraAbilitySystemStatics.h"
 #include "Collision/AuraCollisionChannels.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
@@ -36,7 +37,7 @@ void AAuraProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 
-	Sphere->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::OnSphereOverlap);
+	Sphere->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::OnSphereBeginOverlap);
 
 	if (IsValid(SpawnEffect))
 	{
@@ -64,7 +65,16 @@ void AAuraProjectile::BeginPlay()
 	);
 }
 
-void AAuraProjectile::OnSphereOverlap(
+void AAuraProjectile::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	GetWorld()->GetTimerManager().ClearTimer(LifeTimerHandle);
+
+	Sphere->OnComponentBeginOverlap.RemoveDynamic(this, &ThisClass::OnSphereBeginOverlap);
+
+	Super::EndPlay(EndPlayReason);
+}
+
+void AAuraProjectile::OnSphereBeginOverlap(
 	UPrimitiveComponent* OverlappedComponent,
 	AActor* OtherActor,
 	UPrimitiveComponent* OtherComp,
@@ -73,28 +83,43 @@ void AAuraProjectile::OnSphereOverlap(
 	const FHitResult& SweepResult
 )
 {
+	HandleProjectileHit(OtherActor, bFromSweep ? static_cast<FVector>(SweepResult.ImpactPoint) : GetActorLocation());
+}
+
+void AAuraProjectile::HandleProjectileHit(AActor* InHitActor, const FVector& InImpactPoint)
+{
 	if (bHit || !HasAuthority())
+	{
+		return;
+	}
+
+	if (InHitActor == this)
 	{
 		return;
 	}
 
 	if (DamageEffectSpecHandle.IsValid())
 	{
-		if (const FGameplayEffectContextHandle& DamageEffectContext
-				= DamageEffectSpecHandle.Data.Get()->GetEffectContext();
-			OtherActor == DamageEffectContext.GetEffectCauser())
+		const FGameplayEffectContextHandle& DamageEffectContext
+			= DamageEffectSpecHandle.Data.Get()->GetEffectContext();
+		if (const AActor* const EffectCauser = DamageEffectContext.GetEffectCauser();
+			InHitActor == EffectCauser
+			|| UAuraAbilitySystemStatics::AreActorsFriendly(EffectCauser, InHitActor)
+		)
 		{
 			return;
 		}
 	}
 
-	bHit = true;
-	PlayOnHitEffects(SweepResult);
+	const FVector HitLocation_WS = InImpactPoint;
 
-	MulticastOnHit(SweepResult);
+	bHit = true;
+	PlayOnHitEffects(HitLocation_WS);
+
+	MulticastOnHit(HitLocation_WS);
 
 	if (UAbilitySystemComponent* const TargetASC
-		= UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor)
+		= UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(InHitActor)
 	)
 	{
 		TargetASC->ApplyGameplayEffectSpecToSelf(*DamageEffectSpecHandle.Data);
@@ -103,11 +128,11 @@ void AAuraProjectile::OnSphereOverlap(
 	Destroy();
 }
 
-void AAuraProjectile::PlayOnHitEffects(const FHitResult& HitResult) const
+void AAuraProjectile::PlayOnHitEffects(const FVector& InLocation_WS) const
 {
 	if (IsValid(ImpactSound))
 	{
-		UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, HitResult.ImpactPoint);
+		UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, InLocation_WS);
 	}
 
 	if (IsValid(ImpactEffect))
@@ -115,12 +140,12 @@ void AAuraProjectile::PlayOnHitEffects(const FHitResult& HitResult) const
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(
 			this,
 			ImpactEffect,
-			HitResult.ImpactPoint
+			InLocation_WS
 		);
 	}
 }
 
-void AAuraProjectile::MulticastOnHit_Implementation(const FHitResult& HitResult)
+void AAuraProjectile::MulticastOnHit_Implementation(const FVector& InLocation_WS)
 {
 	if (bHit)
 	{
@@ -128,7 +153,7 @@ void AAuraProjectile::MulticastOnHit_Implementation(const FHitResult& HitResult)
 	}
 
 	bHit = true;
-	PlayOnHitEffects(HitResult);
+	PlayOnHitEffects(InLocation_WS);
 }
 
 void AAuraProjectile::OnLifeEnded()

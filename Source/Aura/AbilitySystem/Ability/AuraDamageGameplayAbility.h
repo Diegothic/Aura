@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AuraGameplayAbility.h"
+#include "Interaction/CombatInterface.h"
 #include "AuraDamageGameplayAbility.generated.h"
 
 UCLASS()
@@ -15,7 +16,13 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Aura|Damage")
 	void GatherDamageTypes(FGameplayTagContainer& OutDamageTypeTags) const;
 
+	UFUNCTION(BlueprintCallable, Category = "Aura|Damage")
+	FAuraTaggedMontage GetRandomAttackMontage() const;
+
 protected:
+	UFUNCTION(BlueprintCallable, Category = "Aura|Damage", DisplayName = "Cause Damage")
+	void CauseDamage(AActor* InTargetActor) const;
+
 	TOptional<FGameplayEffectSpecHandle> MakeDamageEffectSpec(
 		const FGameplayEffectContextHandle& InEffectContext
 	) const;

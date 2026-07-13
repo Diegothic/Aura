@@ -20,7 +20,7 @@ void UAuraProjectileSpell::ActivateAbility(
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 }
 
-void UAuraProjectileSpell::SpawnProjectile(const FVector& TargetLocation)
+void UAuraProjectileSpell::SpawnProjectile(const FVector& InTargetLocation, const FGameplayTag& InCombatSocketTag)
 {
 	const FGameplayAbilityActivationInfo ActivationInfo = GetCurrentActivationInfo();
 	if (!HasAuthority(&ActivationInfo))
@@ -31,15 +31,15 @@ void UAuraProjectileSpell::SpawnProjectile(const FVector& TargetLocation)
 	const AActor* const AvatarActor = GetAvatarActorFromActorInfo();
 	AActor* const OwningActor = GetOwningActorFromActorInfo();
 
-	FTransform SpawnTransform;
-	if (const ICombatInterface* const CombatInterface = Cast<ICombatInterface>(AvatarActor))
-	{
-		const FVector SpawnLocation = CombatInterface->GetCombatSocketLocation();
-		const FRotator SpawnRotation = UKismetMathLibrary::FindLookAtRotation(SpawnLocation, TargetLocation);
+	const FVector SpawnLocation = ICombatInterface::Execute_GetCombatSocketLocation(
+		AvatarActor,
+		InCombatSocketTag
+	);
+	const FRotator SpawnRotation = UKismetMathLibrary::FindLookAtRotation(SpawnLocation, InTargetLocation);
 
-		SpawnTransform.SetLocation(SpawnLocation);
-		SpawnTransform.SetRotation(SpawnRotation.Quaternion());
-	}
+	FTransform SpawnTransform;
+	SpawnTransform.SetLocation(SpawnLocation);
+	SpawnTransform.SetRotation(SpawnRotation.Quaternion());
 
 	AAuraProjectile* const SpawnedProjectile = GetWorld()->SpawnActorDeferred<AAuraProjectile>(
 		ProjectileClass,
@@ -62,7 +62,7 @@ void UAuraProjectileSpell::SpawnProjectile(const FVector& TargetLocation)
 		Actors.Emplace(SpawnedProjectile);
 		EffectContext.AddActors(Actors);
 		FHitResult HitResult;
-		HitResult.Location = TargetLocation;
+		HitResult.Location = InTargetLocation;
 		EffectContext.AddHitResult(HitResult);
 
 		if (const TOptional<FGameplayEffectSpecHandle> EffectSpecHandleOpt = MakeDamageEffectSpec(EffectContext);

@@ -119,6 +119,10 @@ void FAuraGameplayTags::Init()
 		FName("Event.Montage.FireBolt"),
 		FString("Fire Bolt Montage Event")
 	);
+	Instance.Event_Montage_Attack_Melee = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Event.Montage.Attack.Melee"),
+		FString("Melee Attack Montage Event")
+	);
 
 	// Gameplay Effect Tags
 	Instance.GameplayEffect_Damage = UGameplayTagsManager::Get().AddNativeGameplayTag(
@@ -145,5 +149,47 @@ void FAuraGameplayTags::Init()
 	Instance.GameplayEffect_HitReact = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("GameplayEffect.HitReact"),
 		FString("Actor owning this Tag is reacting to a Hit")
+	);
+
+	// Ability Tags
+	Instance.Ability_Attack = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Ability.Attack"),
+		FString("Attack Ability")
+	);
+	Instance.Ability_Summon = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Ability.Summon"),
+		FString("Summon Ability")
+	);
+
+	// Combat Socket Tags
+	Instance.CombatSocket_Weapon = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("CombatSocket.Weapon"),
+		FString("Weapon")
+	);
+	Instance.CombatSocket_RightHand = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("CombatSocket.RightHand"),
+		FString("Right Hand")
+	);
+	Instance.CombatSocket_LeftHand = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("CombatSocket.LeftHand"),
+		FString("Left Hand")
+	);
+	Instance.CombatSocket_Tail = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("CombatSocket.Tail"),
+		FString("Tail")
+	);
+
+	// Montage Tags
+	Instance.Montage_Attack_1 = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Montage.Attack.1")
+	);
+	Instance.Montage_Attack_2 = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Montage.Attack.2")
+	);
+	Instance.Montage_Attack_3 = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Montage.Attack.3")
+	);
+	Instance.Montage_Attack_4 = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Montage.Attack.4")
 	);
 }

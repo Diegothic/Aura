@@ -50,6 +50,7 @@ public:
 
 	//~ Begin Event Tags
 	FGameplayTag Event_Montage_FireBolt;
+	FGameplayTag Event_Montage_Attack_Melee;
 	//~ End Event Tags
 
 	//~ Begin Gameplay Effect Tags
@@ -61,6 +62,25 @@ public:
 
 	FGameplayTag GameplayEffect_HitReact;
 	//~ End Gameplay Effect Tags
+
+	// ~ Begin Ability Tags
+	FGameplayTag Ability_Attack;
+	FGameplayTag Ability_Summon;
+	// ~ End Ability Tags
+
+	// ~ Begin Combat Socket Tags
+	FGameplayTag CombatSocket_Weapon;
+	FGameplayTag CombatSocket_RightHand;
+	FGameplayTag CombatSocket_LeftHand;
+	FGameplayTag CombatSocket_Tail;
+	// ~ End Combat Socket Tags
+
+	// ~ Begin Montage Tags
+	FGameplayTag Montage_Attack_1;
+	FGameplayTag Montage_Attack_2;
+	FGameplayTag Montage_Attack_3;
+	FGameplayTag Montage_Attack_4;
+	// ~ End Montage Tags
 
 private:
 	static AURA_API FAuraGameplayTags Instance;

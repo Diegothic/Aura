@@ -7,15 +7,17 @@
 #include "GameplayTagContainer.h"
 #include "AbilitySystem/Data/CharacterClassInfo.h"
 #include "Aura/Interaction/TargetInterface.h"
+#include "Interaction/AuraEnemyInterface.h"
 
 #include "AuraEnemyCharacter.generated.h"
 
+class UBehaviorTree;
 class UWidgetComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEnemyAttributeChangedSignature, float, NewValue);
 
 UCLASS()
-class AURA_API AAuraEnemyCharacter : public AAuraCharacterBase, public ITargetInterface
+class AURA_API AAuraEnemyCharacter : public AAuraCharacterBase, public ITargetInterface, public IAuraEnemyInterface
 {
 	GENERATED_BODY()
 
@@ -26,6 +28,10 @@ public:
 	virtual void PostInitializeComponents() override;
 	virtual void BeginPlay() override;
 	//~ End AActor Interface
+
+	//~ Begin APawn Interface
+	virtual void PossessedBy(AController* InNewController) override;
+	//~ End APawn Interface
 
 	UPROPERTY(BlueprintAssignable, Category = "Aura|AbilitySystem|Attributes")
 	FOnEnemyAttributeChangedSignature OnHealthChanged;
@@ -43,6 +49,11 @@ public:
 	virtual int32 GetCharacterLevel() const override;
 	virtual void Die() override;
 	//~ End ICombatInterface Interface
+
+	// ~ Begin IAuraEnemyInterface
+	virtual AActor* GetCombatTarget_Implementation() const override;
+	virtual void SetCombatTarget_Implementation(AActor* InTargetActor) override;
+	// ~ End IAuraEnemyInterface
 
 	UFUNCTION(BlueprintPure, Category = "Aura|Combat")
 	bool IsReactingToHit() const { return bReactingToHit; }
@@ -74,5 +85,11 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Aura|Combat", meta = (ForceUnits = "s"))
 	float DeathLifeSpan = 5.0f;
 
+	UPROPERTY(Transient)
+	TWeakObjectPtr<AActor> CombatTarget;
+
 	bool bReactingToHit = false;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Aura|AI")
+	TObjectPtr<UBehaviorTree> BehaviorTree;
 };

@@ -9,7 +9,7 @@ int32 ICombatInterface::GetCharacterLevel() const
 	return 0;
 }
 
-FVector ICombatInterface::GetCombatSocketLocation() const
+FVector ICombatInterface::GetCombatSocketLocation_Implementation(const FGameplayTag& InMontageTag) const
 {
 	return FVector::ZeroVector;
 }
@@ -25,4 +25,39 @@ UAnimMontage* ICombatInterface::GetHitReactMontage_Implementation() const
 
 void ICombatInterface::Die()
 {
+}
+
+bool ICombatInterface::IsDead_Implementation() const
+{
+	return false;
+}
+
+AActor* ICombatInterface::GetAvatarActor_Implementation()
+{
+	return nullptr;
+}
+
+TArray<FAuraTaggedMontage> ICombatInterface::GetAttackMontages_Implementation()
+{
+	return {};
+}
+
+FAuraTaggedMontage ICombatInterface::GetMatchingAttackMontage_Implementation(const FGameplayTagContainer& InMontageTags)
+{
+	return {};
+}
+
+UNiagaraSystem* ICombatInterface::GetHitImpactEffect_Implementation()
+{
+	return nullptr;
+}
+
+int32 ICombatInterface::GetMinionCount_Implementation()
+{
+	return 0;
+}
+
+int32 ICombatInterface::ChangeMinionCount_Implementation(const int32 InValueChange)
+{
+	return 0;
 }

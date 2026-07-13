@@ -6,11 +6,23 @@
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "GameplayTags/AuraGameplayTags.h"
+#include "Kismet/GameplayStatics.h"
+#include "Niagara/Classes/NiagaraSystem.h"
 
 
 AAuraCharacterBase::AAuraCharacterBase()
 {
 	PrimaryActorTick.bCanEverTick = false;
+
+	bUseControllerRotationPitch = false;
+	bUseControllerRotationYaw = false;
+	bUseControllerRotationRoll = false;
+	if (UCharacterMovementComponent* const MovementComp = GetCharacterMovement(); IsValid(MovementComp))
+	{
+		MovementComp->bUseControllerDesiredRotation = true;
+	}
 
 	Weapon = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Weapon"));
 	Weapon->SetupAttachment(GetMesh(), WeaponSocket);
@@ -37,14 +49,41 @@ UAbilitySystemComponent* AAuraCharacterBase::GetAbilitySystemComponent() const
 	return AbilitySystemComponent;
 }
 
-FVector AAuraCharacterBase::GetCombatSocketLocation() const
+FVector AAuraCharacterBase::GetCombatSocketLocation_Implementation(const FGameplayTag& InMontageTag) const
 {
-	if (!Weapon || !Weapon->DoesSocketExist(WeaponSpellSocket))
+	if (InMontageTag == FAuraGameplayTags::Get().CombatSocket_Weapon
+		&& IsValid(Weapon)
+		&& Weapon->DoesSocketExist(WeaponTipSocket)
+	)
 	{
-		return GetActorLocation();
+		return Weapon->GetSocketLocation(WeaponTipSocket);
 	}
 
-	return Weapon->GetSocketLocation(WeaponSpellSocket);
+	if (const USkeletalMeshComponent* const CharacterMesh = GetMesh(); IsValid(CharacterMesh))
+	{
+		if (InMontageTag == FAuraGameplayTags::Get().CombatSocket_RightHand
+			&& CharacterMesh->DoesSocketExist(RightHandSocket)
+		)
+		{
+			return CharacterMesh->GetSocketLocation(RightHandSocket);
+		}
+
+		if (InMontageTag == FAuraGameplayTags::Get().CombatSocket_LeftHand
+			&& CharacterMesh->DoesSocketExist(LeftHandSocket)
+		)
+		{
+			return CharacterMesh->GetSocketLocation(LeftHandSocket);
+		}
+
+		if (InMontageTag == FAuraGameplayTags::Get().CombatSocket_Tail
+			&& CharacterMesh->DoesSocketExist(TailSocket)
+		)
+		{
+			return CharacterMesh->GetSocketLocation(TailSocket);
+		}
+	}
+
+	return GetActorLocation();
 }
 
 UAnimMontage* AAuraCharacterBase::GetHitReactMontage_Implementation() const
@@ -64,6 +103,51 @@ void AAuraCharacterBase::Die()
 	}
 
 	Multicast_HandleDeath();
+}
+
+bool AAuraCharacterBase::IsDead_Implementation() const
+{
+	return bDead;
+}
+
+AActor* AAuraCharacterBase::GetAvatarActor_Implementation()
+{
+	return this;
+}
+
+TArray<FAuraTaggedMontage> AAuraCharacterBase::GetAttackMontages_Implementation()
+{
+	return AttackMontages;
+}
+
+FAuraTaggedMontage AAuraCharacterBase::GetMatchingAttackMontage_Implementation(
+	const FGameplayTagContainer& InMontageTags)
+{
+	for (const FAuraTaggedMontage& TaggedMontage : AttackMontages)
+	{
+		if (InMontageTags.HasTagExact(TaggedMontage.MontageTag))
+		{
+			return TaggedMontage;
+		}
+	}
+
+	return {};
+}
+
+UNiagaraSystem* AAuraCharacterBase::GetHitImpactEffect_Implementation()
+{
+	return HitImpactEffect.LoadSynchronous();
+}
+
+int32 AAuraCharacterBase::GetMinionCount_Implementation()
+{
+	return MinionCount;
+}
+
+int32 AAuraCharacterBase::ChangeMinionCount_Implementation(const int32 InValueChange)
+{
+	MinionCount += InValueChange;
+	return MinionCount;
 }
 
 void AAuraCharacterBase::InitAbilityActorInfo()
@@ -140,10 +224,23 @@ void AAuraCharacterBase::Multicast_HandleDeath_Implementation()
 
 	if (UCapsuleComponent* const CapsuleComp = GetCapsuleComponent())
 	{
-		CapsuleComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+		CapsuleComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
+
+	const FVector ActorLocation = GetActorLocation();
+	const FRotator ActorRotation = GetActorRotation();
+
+	if (!DeathSound.IsNull())
+	{
+		if (USoundBase* const DeathSoundInst = DeathSound.LoadSynchronous(); IsValid(DeathSoundInst))
+		{
+			UGameplayStatics::PlaySoundAtLocation(this, DeathSoundInst, ActorLocation, ActorRotation);
+		}
 	}
 
 	Dissolve();
+
+	bDead = true;
 }
 
 void AAuraCharacterBase::ApplyEffectToSelf(const TSubclassOf<UGameplayEffect>& EffectClass, float Level) const

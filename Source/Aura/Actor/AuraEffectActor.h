@@ -30,7 +30,7 @@ struct FEffectActorGameplayEffectSpec
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Aura|AppliedEffects", Meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, Category = "Aura|AppliedEffects")
 	TSubclassOf<UGameplayEffect> GameplayEffectClass;
 
 	UPROPERTY(EditAnywhere, Category = "Aura|AppliedEffects")
@@ -81,21 +81,21 @@ protected:
 	bool OnEndOverlap(AActor* const TargetActor);
 
 private:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Aura|AppliedEffects", Meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, Category = "Aura|AppliedEffects")
 	float EffectLevel = 1.0f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Aura|AppliedEffects", Meta = (AllowPrivateAccess = "true"))
-	bool bDestroyActorOnEffectRemoval = false;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Aura|AppliedEffects", Meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, Category = "Aura|AppliedEffects")
 	bool bDestroyActorOnEffectApplication = false;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Aura|AppliedEffects", Meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, Category = "Aura|AppliedEffects")
+	bool bApplyToEnemies = false;
+
+	UPROPERTY(EditAnywhere, Category = "Aura|AppliedEffects")
 	TArray<FEffectActorGameplayEffectSpec> InstantEffects;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Aura|AppliedEffects", Meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, Category = "Aura|AppliedEffects")
 	TArray<FEffectActorGameplayEffectSpec> DurationEffects;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Aura|AppliedEffects", Meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, Category = "Aura|AppliedEffects")
 	TArray<FEffectActorGameplayEffectSpec> InfiniteEffects;
 };

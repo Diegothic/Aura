@@ -6,11 +6,22 @@
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "AbilitySystem/AuraAbilitySystemStatics.h"
 #include "AbilitySystem/AuraAttributeSet.h"
+#include "BehaviorTree/BehaviorTree.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "Components/WidgetComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameplayTags/AuraGameplayTags.h"
+#include "Runtime/AIModule/Classes/AIController.h"
 #include "UI/Widget/AuraUserWidget.h"
 
+
+namespace AuraEnemyCharacterPrivate
+{
+	const FName HitReactingBlackboardKeyName = FName{"HitReacting"};
+	const FName RangedAttackerBlackboardKeyName = FName{"RangedAttacker"};
+	const FName ElementalistBlackboardKeyName = FName{"Elementalist"};
+	const FName IsDeadBlackboardKeyName = FName{"IsDead"};
+} // namespace AuraEnemyCharacterPrivate
 
 AAuraEnemyCharacter::AAuraEnemyCharacter()
 {
@@ -35,7 +46,11 @@ void AAuraEnemyCharacter::PostInitializeComponents()
 	InitAbilityActorInfo();
 	if (HasAuthority())
 	{
-		UAuraAbilitySystemStatics::GiveStartupAbilities(this, AbilitySystemComponent);
+		UAuraAbilitySystemStatics::GiveStartupAbilities(
+			this,
+			AbilitySystemComponent,
+			CharacterClass
+		);
 	}
 	BindToAbilitySystemEvents();
 }
@@ -50,6 +65,47 @@ void AAuraEnemyCharacter::BeginPlay()
 	}
 
 	BroadcastInitialAttributeValues();
+}
+
+void AAuraEnemyCharacter::PossessedBy(AController* InNewController)
+{
+	Super::PossessedBy(InNewController);
+
+	if (!HasAuthority())
+	{
+		return;
+	}
+
+	if (!IsValid(BehaviorTree))
+	{
+		return;
+	}
+
+	if (AAIController* const AIController = Cast<AAIController>(InNewController))
+	{
+		AIController->RunBehaviorTree(BehaviorTree);
+
+		if (UBlackboardComponent* const BlackboardComp = AIController->GetBlackboardComponent();
+			IsValid(BlackboardComp))
+		{
+			BlackboardComp->SetValueAsBool(
+				AuraEnemyCharacterPrivate::HitReactingBlackboardKeyName,
+				false
+			);
+
+			const bool bIsRangedAttacker = Aura::CharacterClass::IsRangedAttacker(CharacterClass);
+			BlackboardComp->SetValueAsBool(
+				AuraEnemyCharacterPrivate::RangedAttackerBlackboardKeyName,
+				bIsRangedAttacker
+			);
+
+			const bool bIsElementalist = CharacterClass == ECharacterClass::Elementalist;
+			BlackboardComp->SetValueAsBool(
+				AuraEnemyCharacterPrivate::ElementalistBlackboardKeyName,
+				bIsElementalist
+			);
+		}
+	}
 }
 
 void AAuraEnemyCharacter::HighlightActor()
@@ -86,7 +142,30 @@ int32 AAuraEnemyCharacter::GetCharacterLevel() const
 void AAuraEnemyCharacter::Die()
 {
 	SetLifeSpan(DeathLifeSpan);
+
+	if (AAIController* const AIController = Cast<AAIController>(GetController()))
+	{
+		if (UBlackboardComponent* const BlackboardComp = AIController->GetBlackboardComponent();
+			IsValid(BlackboardComp))
+		{
+			BlackboardComp->SetValueAsBool(
+				AuraEnemyCharacterPrivate::IsDeadBlackboardKeyName,
+				true
+			);
+		}
+	}
+
 	Super::Die();
+}
+
+AActor* AAuraEnemyCharacter::GetCombatTarget_Implementation() const
+{
+	return CombatTarget.Get();
+}
+
+void AAuraEnemyCharacter::SetCombatTarget_Implementation(AActor* InTargetActor)
+{
+	CombatTarget = InTargetActor;
 }
 
 void AAuraEnemyCharacter::InitAbilityActorInfo()
@@ -164,12 +243,25 @@ void AAuraEnemyCharacter::OnHitReactTagChangedEvent(const FGameplayTag InChanged
 {
 	bReactingToHit = InNewTagCount > 0;
 
-	UCharacterMovementComponent* const MovementComp = GetCharacterMovement();
-	if (IsValid(MovementComp))
+	if (HasAuthority())
 	{
-		if (bReactingToHit)
+		if (UCharacterMovementComponent* const MovementComp = GetCharacterMovement(); IsValid(MovementComp))
 		{
-			MovementComp->StopMovementImmediately();
+			if (bReactingToHit)
+			{
+				MovementComp->StopMovementImmediately();
+			}
+
+			MovementComp->SetMovementMode(bReactingToHit ? MOVE_Custom : MOVE_Walking);
+		}
+
+		if (AAIController* const AIController = Cast<AAIController>(GetController()))
+		{
+			if (UBlackboardComponent* const BlackboardComp = AIController->GetBlackboardComponent();
+				IsValid(BlackboardComp))
+			{
+				BlackboardComp->SetValueAsBool(AuraEnemyCharacterPrivate::HitReactingBlackboardKeyName, bReactingToHit);
+			}
 		}
 	}
 }
