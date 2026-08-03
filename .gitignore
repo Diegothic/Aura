@@ -77,6 +77,3 @@ Plugins/**/Intermediate/*
 
 # Cache files for the editor to use
 DerivedDataCache/*
-
-# Art assets included separately
-Content/Assets/*
