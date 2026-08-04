@@ -8,6 +8,7 @@
 #include "AbilitySystem/AuraAttributeSet.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Components/SkeletalMeshComponent.h"
 #include "Components/WidgetComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameplayTags/AuraGameplayTags.h"
@@ -153,6 +154,11 @@ void AAuraEnemyCharacter::Die()
 				true
 			);
 		}
+	}
+
+	if (IsValid(HealthBar))
+	{
+		HealthBar->SetWidget(nullptr);
 	}
 
 	Super::Die();
