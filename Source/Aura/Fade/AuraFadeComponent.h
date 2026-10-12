@@ -17,7 +17,7 @@ struct FAuraFadeMeshEntry
 
 	UPROPERTY(EditAnywhere)
 	TArray<TWeakObjectPtr<UMaterialInterface>> DefaultMaterials;
-	
+
 	UPROPERTY(EditAnywhere)
 	TEnumAsByte<ECollisionResponse> CameraCollisionResponse;
 };

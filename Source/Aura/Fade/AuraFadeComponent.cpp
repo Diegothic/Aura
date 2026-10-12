@@ -4,9 +4,15 @@
 #include "AuraFadeComponent.h"
 
 
+namespace AuraFadeComponentPrivate
+{
+	const FName FadeComponentTag = TEXT("Fade");
+}
+
 UAuraFadeComponent::UAuraFadeComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
+	PrimaryComponentTick.bStartWithTickEnabled = false;
 }
 
 void UAuraFadeComponent::BeginPlay()
@@ -21,6 +27,11 @@ void UAuraFadeComponent::BeginPlay()
 
 void UAuraFadeComponent::FadeOut(UObject* InSource)
 {
+	if (!IsValid(InSource))
+	{
+		return;
+	}
+
 	FadeOutSources.Emplace(InSource);
 
 	RefreshFade();
@@ -28,6 +39,11 @@ void UAuraFadeComponent::FadeOut(UObject* InSource)
 
 void UAuraFadeComponent::FadeIn(UObject* InSource)
 {
+	if (!IsValid(InSource))
+	{
+		return;
+	}
+
 	FadeOutSources.Remove(InSource);
 
 	RefreshFade();
@@ -58,7 +74,7 @@ void UAuraFadeComponent::CompleteFadeInstant()
 			FadeOutPercent = 1.0f;
 			UseDynamicMaterial();
 			SetDynamicMaterialFadeParameter(1.0f);
-			SetCollisionResponse(true);
+			SetCollisionResponse(false);
 			break;
 		}
 	default:
@@ -78,7 +94,7 @@ void UAuraFadeComponent::SetupEntries()
 
 	Owner->ForEachComponent<UMeshComponent>(false, [this](UMeshComponent* MeshComp)
 	{
-		if (!MeshComp->ComponentHasTag("Fade"))
+		if (!MeshComp->ComponentHasTag(AuraFadeComponentPrivate::FadeComponentTag))
 		{
 			return;
 		}
@@ -90,7 +106,7 @@ void UAuraFadeComponent::SetupEntries()
 			Entry.DefaultMaterials.Emplace(MaterialInst);
 		}
 		Entry.CameraCollisionResponse = MeshComp->GetCollisionResponseToChannel(ECC_Camera);
-		FadeMeshEntries.Emplace(Entry);
+		FadeMeshEntries.Emplace(MoveTemp(Entry));
 	});
 }
 
@@ -217,9 +233,15 @@ void UAuraFadeComponent::UseDefaultMaterials()
 {
 	for (const FAuraFadeMeshEntry& Entry : FadeMeshEntries)
 	{
+		UMeshComponent* const MeshComp = Entry.MeshComponent.Get();
+		if (!IsValid(MeshComp))
+		{
+			continue;
+		}
+
 		for (int32 MaterialIdx = 0; MaterialIdx < Entry.DefaultMaterials.Num(); MaterialIdx++)
 		{
-			Entry.MeshComponent->SetMaterial(MaterialIdx, Entry.DefaultMaterials[MaterialIdx].Get());
+			MeshComp->SetMaterial(MaterialIdx, Entry.DefaultMaterials[MaterialIdx].Get());
 		}
 	}
 }
@@ -228,9 +250,15 @@ void UAuraFadeComponent::UseDynamicMaterial()
 {
 	for (const FAuraFadeMeshEntry& Entry : FadeMeshEntries)
 	{
+		UMeshComponent* const MeshComp = Entry.MeshComponent.Get();
+		if (!IsValid(MeshComp))
+		{
+			continue;
+		}
+
 		for (int32 MaterialIdx = 0; MaterialIdx < Entry.DefaultMaterials.Num(); MaterialIdx++)
 		{
-			Entry.MeshComponent->SetMaterial(MaterialIdx, DynamicFadeMaterial);
+			MeshComp->SetMaterial(MaterialIdx, DynamicFadeMaterial);
 		}
 	}
 }
@@ -249,14 +277,17 @@ void UAuraFadeComponent::SetCollisionResponse(bool bInEnabled)
 {
 	for (const FAuraFadeMeshEntry& Entry : FadeMeshEntries)
 	{
-		for (int32 MaterialIdx = 0; MaterialIdx < Entry.DefaultMaterials.Num(); MaterialIdx++)
+		UMeshComponent* const MeshComp = Entry.MeshComponent.Get();
+		if (!IsValid(MeshComp))
 		{
-			Entry.MeshComponent->SetCollisionResponseToChannel(
-				ECC_Camera,
-				bInEnabled
-					? Entry.CameraCollisionResponse.GetValue()
-					: ECR_Ignore
-			);
+			continue;
 		}
+
+		MeshComp->SetCollisionResponseToChannel(
+			ECC_Camera,
+			bInEnabled
+				? Entry.CameraCollisionResponse.GetValue()
+				: ECR_Ignore
+		);
 	}
 }
