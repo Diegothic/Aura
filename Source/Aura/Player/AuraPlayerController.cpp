@@ -138,8 +138,18 @@ void AAuraPlayerController::OnMoveTriggered(const FInputActionValue& Value)
 		return;
 	}
 
-	const FRotator Rotation(0.0, GetControlRotation().Yaw, 0.0);
-	const FRotationMatrix RotationMatrix(Rotation);
+	const float ViewYaw = [this]() -> float
+	{
+		if (IsValid(PlayerCameraManager))
+		{
+			return PlayerCameraManager->GetCameraRotation().Yaw;
+		}
+
+		return GetControlRotation().Yaw;
+	}();
+
+	const FRotator Rotation{0.0f, ViewYaw, 0.0f};
+	const FRotationMatrix RotationMatrix{Rotation};
 	const FVector ForwardVector = RotationMatrix.GetUnitAxis(EAxis::X);
 	const FVector RightVector = RotationMatrix.GetUnitAxis(EAxis::Y);
 
