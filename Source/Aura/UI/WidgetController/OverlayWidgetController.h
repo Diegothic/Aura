@@ -8,6 +8,7 @@
 
 #include "OverlayWidgetController.generated.h"
 
+class UAuraAbilityInfoDataAsset;
 class UAuraUserWidget;
 struct FOnAttributeChangeData;
 
@@ -66,6 +67,9 @@ private:
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Aura|UI|WidgetData")
 	TObjectPtr<UDataTable> MessageWidgetDataTable;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Aura|UI|WidgetData")
+	TObjectPtr<UAuraAbilityInfoDataAsset> AbilityInfo;
 };
 
 template <typename T>
